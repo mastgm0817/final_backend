@@ -16,4 +16,5 @@ public class User {
     private String email;
     private String picture;
     private String role = "ROLE_USER";
+    private String lover;
 }
