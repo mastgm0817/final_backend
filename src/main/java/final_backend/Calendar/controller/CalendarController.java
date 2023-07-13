@@ -93,8 +93,8 @@ public class CalendarController {
 
     @GetMapping("/updateSchedule/userId={userId}")
     public ResponseEntity<Map<String, Object>> updateform(@PathVariable("userId") String userId,
-                                                              @RequestParam("scheduleId") Long scheduleId,
-                                                              @RequestParam("shared") boolean shared) {
+                                                          @RequestParam("scheduleId") Long scheduleId,
+                                                          @RequestParam("shared") boolean shared) {
         // userId를 통해 사용자 정보 조회
 
         Map<String, Object> response = new HashMap<>();
@@ -126,6 +126,31 @@ public class CalendarController {
         }
     }
 
+    @PostMapping("/deleteSchedule/userId={userId}/scheduleId={scheduleId}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable("userId") String userId,
+                                                 @PathVariable("scheduleId") Long scheduleId,
+                                                 @RequestParam("shared") boolean shared) {
+        User user = userService.findByUserId(userId);
 
-
+        if (user != null) {
+            if (shared) {
+                ShareScheduleDTO shareSchedule = shareScheduleService.findById(scheduleId);
+                if ((shareSchedule != null && shareSchedule.getShareScheduleWriterId().equals(userId)) || shareSchedule.getShareScheduleLoverId().equals(userId)) {
+                    shareScheduleService.deleteShareSchedule(userId, scheduleId);
+                    return ResponseEntity.ok("Share Schedule Deleted!");
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not authorized or schedule not found");
+                }
+            } else {
+                MyScheduleDTO mySchedule = myScheduleService.findById(scheduleId);
+                if (mySchedule != null && mySchedule.getWriterId().equals(userId)) {
+                    myScheduleService.deleteMySchedule(scheduleId);
+                    return ResponseEntity.ok("My Schedule Deleted!");
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not authorized or schedule not found");
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    }
 }

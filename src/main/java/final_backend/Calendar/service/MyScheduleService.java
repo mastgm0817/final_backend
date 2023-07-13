@@ -29,4 +29,8 @@ public class MyScheduleService {
     public MyScheduleDTO findById(Long scheduleId) {
         return myScheduleRepository.findById(scheduleId).orElse(null);
     }
+
+    public void deleteMySchedule (Long scheduleId) {
+        myScheduleRepository.deleteById(scheduleId);
+    }
 }
