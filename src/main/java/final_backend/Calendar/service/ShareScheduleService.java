@@ -53,6 +53,10 @@ public class ShareScheduleService {
         return shareScheduleRepository.save(shareSchedule);
     }
 
+    public void deleteShareSchedule(String userId, Long scheduleId) {
+        shareScheduleRepository.deleteById(scheduleId);
+    }
+
 //    public ShareScheduleDTO updateShareSchedule(Long scheduleId, ScheduleRequestDTO scheduleRequestDTO) {
 //        ShareScheduleDTO shareSchedule = findById(scheduleId);
 //
