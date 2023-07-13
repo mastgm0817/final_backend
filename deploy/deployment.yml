@@ -12,6 +12,8 @@ spec:
       labels:
         app: backend
     spec:
+      nodeSelector:
+        worker-node: "true"
       containers:
         - name: backend-pod
           image: 180.150.207.73:5000/backend:latest
