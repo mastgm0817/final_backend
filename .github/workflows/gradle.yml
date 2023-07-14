@@ -10,8 +10,8 @@ name: final project backendpart CI/CD with Gradle
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
 
 permissions:
   contents: read
