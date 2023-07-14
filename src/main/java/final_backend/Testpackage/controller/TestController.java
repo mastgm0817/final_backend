@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class TestController {
-    @GetMapping
+    @GetMapping("/test")
     public String showIndex(){
-        return "index";
+        return "test";
     }
 }
