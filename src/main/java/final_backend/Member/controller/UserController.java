@@ -10,6 +10,7 @@ import final_backend.Member.service.UserService;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class UserController {
     @Autowired
@@ -26,4 +27,25 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+
+    @DeleteMapping("/users/{uid}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String uid) {
+        boolean deleted = userService.deleteUser(uid);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/users/{uid}")
+    public ResponseEntity<User> updateUser(@PathVariable String uid, @RequestBody User updatedUser) {
+        User user = userService.updateUser(uid, updatedUser);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

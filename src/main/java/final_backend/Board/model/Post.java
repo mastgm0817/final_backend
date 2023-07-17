@@ -23,8 +23,8 @@ public class Post {
     private Long views; /* 조회수 */
     private Long recommendations; /* 추천수 */
 
-    /* 댓글의 postDTO와 맵핑 */
-    @OneToMany(mappedBy = "postDTO", cascade = CascadeType.ALL)
-    private List<Comment> commentList;
+//    /* 댓글의 postDTO와 맵핑 */
+//    @OneToMany(mappedBy = "postDTO", cascade = CascadeType.ALL)
+//    private List<Comment> commentList;
 
 }
