@@ -51,7 +51,7 @@ jobs:
       - name: Download image digest artifact
         uses: actions/download-artifact@v2
         with:
-          name: image-digest-short
+          name: image-digest
       - name: Update image in Kubernetes manifest
         run: |
           IMAGE_DIGEST=$(cat image-digest.txt)
