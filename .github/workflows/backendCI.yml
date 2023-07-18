@@ -3,6 +3,11 @@ name: final project backendpart CI/CD with Gradle
 on:
   push:
     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -19,9 +24,6 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build
 
-
-    - name: Checkout code
-      uses: actions/checkout@v3
     - name: Configure Docker daemon
       run: |
         echo '{ "insecure-registries": ["180.150.207.73:5000"] }' | sudo tee /etc/docker/daemon.json
@@ -37,6 +39,7 @@ jobs:
         tags: |
           180.150.207.73:5000/backend:${{ github.sha }}
           180.150.207.73:5000/backend:latest
+          
     - name: Save image digest
       run: echo "${{ steps.docker_build.outputs.digest }}" > image-digest.txt
     - name: Upload image digest as artifact
@@ -46,9 +49,10 @@ jobs:
         path: image-digest.txt
 
   update-manifest:
-      name: Update Kubernetes manifest
-      runs-on: ubuntu-latest
-      steps:
+    name: Update Kubernetes manifest
+    runs-on: ubuntu-latest
+    needs: ['build']
+    steps:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Download image digest artifact
