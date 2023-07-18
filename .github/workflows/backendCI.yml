@@ -55,7 +55,7 @@ jobs:
     - name: Update image in Kubernetes manifest
       run: |
         IMAGE_DIGEST=$(cat image-digest.txt)
-        sed -i "s|image: 180.150.207.73:5000/frontend|image: 180.150.207.73:5000/frontend@$IMAGE_DIGEST|g" deploy/deployment.yml
+        sed -i "s|image: 180.150.207.73:5000/backend|image: 180.150.207.73:5000/backend@$IMAGE_DIGEST|g" deploy/deployment.yml
     - name: Commit and push changes
       run: |
         git config --local user.email "mastgm0817@gmail.com"
