@@ -48,4 +48,17 @@ public class PostService {
             return null;
         }
     }
+
+    public Post increaseViewCount(Long pid){
+        Optional<Post> postOptional = postRepository.findById(pid);
+        if (postOptional.isPresent()){
+            Post existingPost = postOptional.get();
+            long currView=existingPost.getViews();
+            existingPost.setViews(currView+1);
+            System.out.println(pid+"번 게시글 조회함");
+            return postRepository.save(existingPost);
+        } else{return null;}
+    }
+
+
 }

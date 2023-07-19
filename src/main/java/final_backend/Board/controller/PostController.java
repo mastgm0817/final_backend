@@ -1,5 +1,6 @@
 package final_backend.Board.controller;
 
+import final_backend.Board.respository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class PostController {
     @GetMapping("/{pid}")
     public ResponseEntity<Post> getPostById(@PathVariable("pid") Long pid) {
         Optional<Post> post = postService.getPostById(pid);
+        increasePostView(pid);
         return post.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -44,6 +46,17 @@ public class PostController {
     @PutMapping("/{pid}")
     public ResponseEntity<Post> updatePost(@PathVariable("pid") Long pid, @RequestBody Post updatedPost) {
         Post updatedPostEntity = postService.updatePost(pid, updatedPost);
+        if (updatedPostEntity != null) {
+            return ResponseEntity.ok(updatedPostEntity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{pid}/view")
+    public ResponseEntity<Post> increasePostView(@PathVariable("pid") long pid){
+        Post viewedPost=postService.getPostById(pid).get();
+        Post updatedPostEntity = postService.increaseViewCount(pid);
         if (updatedPostEntity != null) {
             return ResponseEntity.ok(updatedPostEntity);
         } else {
