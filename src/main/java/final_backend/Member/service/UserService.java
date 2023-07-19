@@ -20,8 +20,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User findByUserId(String userId) {
-        return userRepository.findByUid(userId);
+    public User findByUserName(String name) {
+        return userRepository.findByName(name);
     }
 
     public boolean deleteUser(String userId) {
@@ -42,4 +42,5 @@ public class UserService {
         }
         return null;
     }
+
 }
