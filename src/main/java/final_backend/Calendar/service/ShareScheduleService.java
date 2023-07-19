@@ -16,8 +16,8 @@ public class ShareScheduleService {
     private UserService userService;
     @Autowired
     private ShareScheduleRepository shareScheduleRepository;
-    public ShareScheduleDTO CreateShareSchedule(String userId, LocalDate date, String schedule, boolean share) {
-        User user = userService.findByUserId(userId);
+    public ShareScheduleDTO CreateShareSchedule(String userName, LocalDate date, String schedule, boolean share) {
+        User user = userService.findByUserName(userName);
         ShareScheduleDTO shareSchedule = new ShareScheduleDTO();
         shareSchedule.setShareScheduleWriterId(user.getName());
         shareSchedule.setShareScheduleLoverId(user.getLover());
@@ -27,25 +27,25 @@ public class ShareScheduleService {
         return shareScheduleRepository.save(shareSchedule);
         }
 
-    public List<ShareScheduleDTO> getShareSchedule(String userId) {
-        return shareScheduleRepository.findByShareScheduleWriterIdOrShareScheduleLoverId(userId, userId);
+    public List<ShareScheduleDTO> getShareSchedule(String userName) {
+        return shareScheduleRepository.findByShareScheduleWriterIdOrShareScheduleLoverId(userName, userName);
     }
 
     public ShareScheduleDTO findById(Long scheduleId) {
         return shareScheduleRepository.findById(scheduleId).orElse(null);
     }
 
-    public ShareScheduleDTO updateShareSchedule(String userId, Long scheduleId, LocalDate date, String schedule, boolean share) {
-        User user = userService.findByUserId(userId);
+    public ShareScheduleDTO updateShareSchedule(String userName, Long scheduleId, LocalDate date, String schedule, boolean share) {
+        User user = userService.findByUserName(userName);
         String lover = null;
-        if (user.getLover()==userId) {
+        if (user.getLover()==userName) {
             lover = user.getName();
         }
         else {
             lover = user.getLover();
         }
         ShareScheduleDTO shareSchedule = findById(scheduleId);
-        shareSchedule.setShareScheduleWriterId(userId);
+        shareSchedule.setShareScheduleWriterId(userName);
         shareSchedule.setShareScheduleLoverId(lover);
         shareSchedule.setShareScheduleDate(date);
         shareSchedule.setShareScheduleContent(schedule);
