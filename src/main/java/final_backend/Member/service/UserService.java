@@ -9,10 +9,8 @@ import java.util.List;
 
 @Service
 public class UserService {
-
     @Autowired
     private UserRepository userRepository;
-
 
     public User createUser(User user) {
         return userRepository.save(user);
@@ -22,9 +20,27 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User findByUserId(String username) {
-        return userRepository.findByName(username);
+    public User findByUserName(String name) {
+        return userRepository.findByName(name);
     }
 
+    public boolean deleteUser(String userId) {
+        User user = userRepository.findByUid(userId);
+        if (user != null) {
+            userRepository.delete(user);
+            return true;
+        }
+        return false;
+    }
+
+    public User updateUser(String userId, User updatedUser) {
+        User user = userRepository.findByUid(userId);
+        if (user != null) {
+            user.setName(updatedUser.getName());
+            user.setEmail(updatedUser.getEmail());
+            return userRepository.save(user);
+        }
+        return null;
+    }
 
 }
