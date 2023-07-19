@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/calendar")
-//@CrossOrigin(origins = "http://192.168.0.13:3000")
 public class CalendarController {
     @Autowired
     private MyScheduleService myScheduleService;
@@ -30,30 +30,30 @@ public class CalendarController {
     @Autowired
     private ShareScheduleService shareScheduleService;
 
-    @PostMapping("/setSchedule/userId={userId}")
+    @PostMapping("/setSchedule/userName={userName}")
     public ResponseEntity<String> createSchedule(
-            @PathVariable("userId") String userId,
+            @PathVariable("userName") String userName,
             @RequestBody ScheduleRequestDTO requestDTO) {
 
-        User user = userService.findByUserId(userId);
+        User user = userService.findByUserName(userName);
         if (user != null) {
             if (requestDTO.isShare()) {
-                ShareScheduleDTO savedShareSchedule = shareScheduleService.CreateShareSchedule(userId, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare());
+                ShareScheduleDTO savedShareSchedule = shareScheduleService.CreateShareSchedule(userName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare());
                 return ResponseEntity.ok("Share Schedule Created!");
             } else {
-                MyScheduleDTO savedMySchedule = myScheduleService.CreateMySchedule(userId, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare());
+                MyScheduleDTO savedMySchedule = myScheduleService.CreateMySchedule(userName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare());
                 return ResponseEntity.ok("My Schedule Created!");
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 
-    @GetMapping("/getSchedule/userId={userId}")
-    public ResponseEntity<List<Object>> getAllScheduleByName(@PathVariable("userId") String userId) {
-        User user = userService.findByUserId(userId);
+    @GetMapping("/getSchedule/userName={userName}")
+    public ResponseEntity<List<Object>> getAllScheduleByName(@PathVariable("userName") String userName) {
+        User user = userService.findByUserName(userName);
         if (user != null) {
-            List<MyScheduleDTO> mySchedules = myScheduleService.getScheduleByUserId(userId);
-            List<ShareScheduleDTO> shareSchedules = shareScheduleService.getShareSchedule(userId);
+            List<MyScheduleDTO> mySchedules = myScheduleService.getScheduleByUserId(userName);
+            List<ShareScheduleDTO> shareSchedules = shareScheduleService.getShareSchedule(userName);
             List<Object> combinedSchedules = new ArrayList<>();
             combinedSchedules.addAll(mySchedules);
             combinedSchedules.addAll(shareSchedules);
@@ -69,17 +69,17 @@ public class CalendarController {
     }
 
 
-    @PostMapping("/updateSchedule/userId={userId}/schedulId={scheduleId}")
-    public ResponseEntity<String> updateSchedule(@PathVariable("userId") String userId,
+    @PostMapping("/updateSchedule/userName={userName}/scheduleId={scheduleId}")
+    public ResponseEntity<String> updateSchedule(@PathVariable("userName") String userName,
                                                  @PathVariable("scheduleId") Long scheduleId,
                                                  @RequestBody ScheduleRequestDTO RequestDTO) {
-        User user = userService.findByUserId(userId);
+        User user = userService.findByUserName(userName);
 
         if (user != null) {
             if (RequestDTO.isShare()) {
                 ShareScheduleDTO updatedShareSchedule = shareScheduleService.findById(scheduleId);
-                if ((updatedShareSchedule != null && updatedShareSchedule.getShareScheduleWriterId().equals(userId)) || updatedShareSchedule.getShareScheduleLoverId().equals(userId)) {
-                    shareScheduleService.updateShareSchedule(userId, scheduleId, RequestDTO.getDate(), RequestDTO.getSchedule(), RequestDTO.isShare());
+                if ((updatedShareSchedule != null && updatedShareSchedule.getShareScheduleWriterId().equals(userName)) || updatedShareSchedule.getShareScheduleLoverId().equals(userName)) {
+                    shareScheduleService.updateShareSchedule(userName, scheduleId, RequestDTO.getDate(), RequestDTO.getSchedule(), RequestDTO.isShare());
                 }
                 return ResponseEntity.ok("Share Schedule Updated!");
             } else {
@@ -91,8 +91,8 @@ public class CalendarController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 
-    @GetMapping("/updateSchedule/userId={userId}")
-    public ResponseEntity<Map<String, Object>> updateform(@PathVariable("userId") String userId,
+    @GetMapping("/updateSchedule/userName={userName}")
+    public ResponseEntity<Map<String, Object>> updateform(@PathVariable("userName") String userName,
                                                           @RequestParam("scheduleId") Long scheduleId,
                                                           @RequestParam("shared") boolean shared) {
         // userId를 통해 사용자 정보 조회
@@ -101,7 +101,7 @@ public class CalendarController {
 
         if (shared) {
             ShareScheduleDTO shareSchedule = shareScheduleService.findById(scheduleId);
-            if ((shareSchedule != null && shareSchedule.getShareScheduleWriterId().equals(userId)) || shareSchedule.getShareScheduleLoverId().equals(userId)) {
+            if ((shareSchedule != null && shareSchedule.getShareScheduleWriterId().equals(userName)) || shareSchedule.getShareScheduleLoverId().equals(userName)) {
                 // 공유용 일정을 작성한 사용자와 요청한 사용자가 일치하는지 확인
                 // 일정 수정 로직 구현
 
@@ -113,7 +113,7 @@ public class CalendarController {
             }
         } else {
             MyScheduleDTO mySchedule = myScheduleService.findById(scheduleId);
-            if (mySchedule != null && mySchedule.getWriterId().equals(userId)) {
+            if (mySchedule != null && mySchedule.getWriterId().equals(userName)) {
                 // 개인용 일정을 작성한 사용자와 요청한 사용자가 일치하는지 확인
                 // 일정 수정 로직 구현
 
@@ -126,24 +126,24 @@ public class CalendarController {
         }
     }
 
-    @PostMapping("/deleteSchedule/userId={userId}/scheduleId={scheduleId}")
-    public ResponseEntity<String> deleteSchedule(@PathVariable("userId") String userId,
+    @PostMapping("/deleteSchedule/userName={userName}/scheduleId={scheduleId}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable("userName") String userName,
                                                  @PathVariable("scheduleId") Long scheduleId,
                                                  @RequestParam("shared") boolean shared) {
-        User user = userService.findByUserId(userId);
+        User user = userService.findByUserName(userName);
 
         if (user != null) {
             if (shared) {
                 ShareScheduleDTO shareSchedule = shareScheduleService.findById(scheduleId);
-                if ((shareSchedule != null && shareSchedule.getShareScheduleWriterId().equals(userId)) || shareSchedule.getShareScheduleLoverId().equals(userId)) {
-                    shareScheduleService.deleteShareSchedule(userId, scheduleId);
+                if ((shareSchedule != null && shareSchedule.getShareScheduleWriterId().equals(userName)) || shareSchedule.getShareScheduleLoverId().equals(userName)) {
+                    shareScheduleService.deleteShareSchedule(userName, scheduleId);
                     return ResponseEntity.ok("Share Schedule Deleted!");
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not authorized or schedule not found");
                 }
             } else {
                 MyScheduleDTO mySchedule = myScheduleService.findById(scheduleId);
-                if (mySchedule != null && mySchedule.getWriterId().equals(userId)) {
+                if (mySchedule != null && mySchedule.getWriterId().equals(userName)) {
                     myScheduleService.deleteMySchedule(scheduleId);
                     return ResponseEntity.ok("My Schedule Deleted!");
                 } else {
