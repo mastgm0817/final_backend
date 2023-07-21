@@ -2,8 +2,8 @@ package final_backend.Board.respository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import final_backend.Board.model.Post;
+import final_backend.Board.model.Board;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long> {
 }
