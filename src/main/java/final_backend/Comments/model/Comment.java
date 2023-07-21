@@ -16,6 +16,6 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pid")
     private Post postDTO;
-    private String author;
+    private String nickName;
 
 }
