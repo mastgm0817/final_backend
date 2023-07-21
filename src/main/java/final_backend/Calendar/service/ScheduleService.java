@@ -24,7 +24,7 @@ public class ScheduleService {
         mySchedule.setScheduleContent(schedule);
         mySchedule.setShared(share);
 
-        User lover = userService.findByUserName(loverName);
+        User lover = userService.findByNickName(loverName);
         mySchedule.setLover(lover);
 
         return scheduleRepository.save(mySchedule);
@@ -40,5 +40,9 @@ public class ScheduleService {
 
     public void deleteMySchedule (Long scheduleId) {
         scheduleRepository.deleteById(scheduleId);
+    }
+
+    public List<ScheduleDTO> getScheduleByNickName(String nickname) {
+        return scheduleRepository.findByWriterId(nickname);
     }
 }

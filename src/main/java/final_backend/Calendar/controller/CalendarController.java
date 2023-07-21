@@ -25,27 +25,28 @@ public class CalendarController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/setSchedule/userName={userName}")
+    @PostMapping("/setSchedule/nickName={nickName}")
     public ResponseEntity<String> createSchedule(
-            @PathVariable("userName") String userName,
+            @PathVariable("nickName") String nickName,
             @RequestBody ScheduleRequestDTO requestDTO) {
-        User user = userService.findByUserName(userName);
+        User user = userService.findByNickName(nickName);
+        System.out.println(user);
         String loverName = user.getLover();
         ScheduleDTO scheduleDTO;
         System.out.println(user);
         if (requestDTO.isShare()){
-            scheduleDTO = scheduleService.CreateMySchedule(userName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), loverName);
+            scheduleDTO = scheduleService.CreateMySchedule(nickName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), loverName);
         }
         else {
-            scheduleDTO = scheduleService.CreateMySchedule(userName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), "");
+            scheduleDTO = scheduleService.CreateMySchedule(nickName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), "");
         }
         System.out.println(scheduleDTO);
         return ResponseEntity.ok("user");
     }
 
-    @GetMapping("/getSchedule/userName={userName}")
-    public ResponseEntity<List<ScheduleDTO>> getAllScheduleByName(@PathVariable("userName") String userName) {
-        List<ScheduleDTO> schedules = scheduleService.getScheduleByUserName(userName);
+    @GetMapping("/getSchedule/userName={Nickname}")
+    public ResponseEntity<List<ScheduleDTO>> getAllScheduleByName(@PathVariable("Nickname") String Nickname) {
+        List<ScheduleDTO> schedules = scheduleService.getScheduleByNickName(Nickname);
         System.out.println(schedules);
         return ResponseEntity.ok(schedules);
 
