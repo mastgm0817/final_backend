@@ -1,7 +1,7 @@
 package final_backend.Comments.model;
 
 import lombok.Data;
-import final_backend.Board.model.Post;
+import final_backend.Board.model.Board;
 
 import javax.persistence.*;
 
@@ -12,10 +12,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
     private String content;
+    private String uid;
+    private String nickName;
+
     // 게시글과 댓글 간의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pid")
-    private Post postDTO;
-    private String author;
-
-}
+    @JoinColumn(name = "bid")
+    private Board boardDTO;

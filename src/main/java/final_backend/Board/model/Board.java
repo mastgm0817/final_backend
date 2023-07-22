@@ -1,7 +1,7 @@
 package final_backend.Board.model;
 
-import lombok.Data;
 import final_backend.Comments.model.Comment;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,22 +9,24 @@ import java.util.List;
 
 @Entity
 @Data
-public class Post {
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long pid;
-    private String title;
-    private String content;
-    private String author;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private Long comments; /* 댓글 달린 갯수 */
-    private Long views; /* 조회수 */
-    private Long recommendations; /* 추천수 */
+    private Long bid;
+    private String uid;
+    private String nickName;
 
+    private String b_title;
+    private String b_content;
+    private LocalDateTime b_createdAt;
+    private LocalDateTime b_updatedAt;
+    private Long b_views; /* 조회수 */
+    private Long comments; /* 댓글 달린 갯수 */
+    private Long b_recommendations; /* 추천수 */
+
+//    private List<Comment> commentList;
 //    /* 댓글의 postDTO와 맵핑 */
 //    @OneToMany(mappedBy = "postDTO", cascade = CascadeType.ALL)
-//    private List<Comment> commentList;
 
 }
