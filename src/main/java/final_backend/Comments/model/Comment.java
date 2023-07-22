@@ -19,3 +19,4 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid")
     private Board boardDTO;
+}
