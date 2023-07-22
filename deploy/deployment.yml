@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
         - name: backend-pod
-          image: 180.150.207.73:5000/backend:latest
+          image: 180.150.207.73:5000/backend
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
 ---
 apiVersion: v1
 kind: Service
@@ -28,5 +28,5 @@ spec:
     app: backend
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 8082
       nodePort: 31500
