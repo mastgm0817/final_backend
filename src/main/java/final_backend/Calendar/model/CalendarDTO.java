@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Table(name = "MySchedule")
-public class ScheduleDTO {
+public class CalendarDTO {
     @Id
     @GeneratedValue
     private Long scheduleId;
