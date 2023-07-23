@@ -1,5 +1,4 @@
 package final_backend.Member.service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import final_backend.Member.model.User;
@@ -11,6 +10,8 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    //환경 변수 가져오기
 
     public User createUser(User user) {
         return userRepository.save(user);
@@ -42,5 +43,7 @@ public class UserService {
         }
         return null;
     }
+
+
 
 }
