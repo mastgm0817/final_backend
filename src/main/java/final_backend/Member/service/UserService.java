@@ -1,5 +1,4 @@
 package final_backend.Member.service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import final_backend.Member.model.User;
@@ -12,6 +11,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    //환경 변수 가져오기
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
@@ -20,8 +21,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User findByUserId(String userId) {
-        return userRepository.findByUid(userId);
+    public User findByNickName(String name) {
+        return userRepository.findByNickName(name);
     }
 
     public boolean deleteUser(String userId) {
@@ -36,10 +37,13 @@ public class UserService {
     public User updateUser(String userId, User updatedUser) {
         User user = userRepository.findByUid(userId);
         if (user != null) {
-            user.setName(updatedUser.getName());
+            user.setUserName(updatedUser.getUserName());
             user.setEmail(updatedUser.getEmail());
             return userRepository.save(user);
         }
         return null;
     }
+
+
+
 }
