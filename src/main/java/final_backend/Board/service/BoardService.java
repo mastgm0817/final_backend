@@ -48,4 +48,20 @@ public class BoardService {
             return null;
         }
     }
+
+    public Board increaseViewCount(Board board) {
+        board.setB_views(board.getB_views() + 1);
+        return boardRepository.save(board);
+    }
+
+    public Board recommendIncrease(Long bid) {
+        Optional<Board> postOptional = boardRepository.findById(bid);
+        if (postOptional.isPresent()) {
+            Board existingBoard = postOptional.get();
+            existingBoard.setB_recommendations(existingBoard.getB_recommendations()+1);
+            return boardRepository.save(existingBoard);
+        } else {
+            return null;
+        }
+    }
 }

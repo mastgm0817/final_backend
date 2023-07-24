@@ -25,8 +25,9 @@ public class BoardController {
 
     @GetMapping("/{bid}")
     public ResponseEntity<Board> getPostById(@PathVariable("bid") Long bid) {
-        Optional<Board> post = boardService.getPostById(bid);
-        return post.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        Optional<Board> board = boardService.getPostById(bid);
+        boardService.increaseViewCount(board.get());
+        return board.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -50,6 +51,25 @@ public class BoardController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{bid}/recommend")
+    public ResponseEntity<Board> recommendPost(@PathVariable("bid") Long bid) {
+        Board updatedBoardEntity = boardService.recommendIncrease(bid);
+        if (updatedBoardEntity != null) {
+            return ResponseEntity.ok(updatedBoardEntity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+//    public ResponseEntity<Board> viewIncrease(@PathVariable("bid") Long bid) {
+//        Board updatedBoardEntity = boardService.increaseViewCount(getPostById(bid));
+//        if (updatedBoardEntity != null) {
+//            return ResponseEntity.ok(updatedBoardEntity);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
 
 }
