@@ -25,7 +25,7 @@ public class UserService {
         return userRepository.findByNickName(name);
     }
 
-    public boolean deleteUser(String userId) {
+    public boolean deleteUser(Long userId) {
         User user = userRepository.findByUid(userId);
         if (user != null) {
             userRepository.delete(user);
@@ -34,7 +34,7 @@ public class UserService {
         return false;
     }
 
-    public User updateUser(String userId, User updatedUser) {
+    public User updateUser(Long userId, User updatedUser) {
         User user = userRepository.findByUid(userId);
         if (user != null) {
             user.setUserName(updatedUser.getUserName());
