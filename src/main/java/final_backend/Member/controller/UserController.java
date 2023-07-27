@@ -30,7 +30,8 @@ public class UserController {
 
     @DeleteMapping("/users/{uid}")
     public ResponseEntity<Void> deleteUser(@PathVariable String uid) {
-        boolean deleted = userService.deleteUser(uid);
+        Long num = Long.valueOf(uid);
+        boolean deleted = userService.deleteUser(num);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
@@ -40,7 +41,8 @@ public class UserController {
 
     @PutMapping("/users/{uid}")
     public ResponseEntity<User> updateUser(@PathVariable String uid, @RequestBody User updatedUser) {
-        User user = userService.updateUser(uid, updatedUser);
+        Long num = Long.valueOf(uid);
+        User user = userService.updateUser(num, updatedUser);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
