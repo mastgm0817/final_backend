@@ -14,15 +14,15 @@ public class BoardService {
     @Autowired
     private BoardRepository boardRepository;
 
-    public List<Board> getAllPosts() {
+    public List<Board> getAllBoards() {
         return boardRepository.findAll();
     }
 
-    public Optional<Board> getPostById(Long bid) {
+    public Optional<Board> getBoardById(Long bid) {
         return boardRepository.findById(bid);
     }
 
-    public Board createPost(Board board) {
+    public Board createBoard(Board board) {
         LocalDateTime currentTime = LocalDateTime.now();
         board.setB_createdAt(currentTime);
         board.setB_updatedAt(currentTime);
@@ -31,14 +31,14 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public void deletePost(Long bid) {
+    public void deleteBoard(Long bid) {
         boardRepository.deleteById(bid);
     }
 
-    public Board updatePost(Long bid, Board updatedBoard) {
-        Optional<Board> postOptional = boardRepository.findById(bid);
-        if (postOptional.isPresent()) {
-            Board existingBoard = postOptional.get();
+    public Board updateBoard(Long bid, Board updatedBoard) {
+        Optional<Board> boardOptional = boardRepository.findById(bid);
+        if (boardOptional.isPresent()) {
+            Board existingBoard = boardOptional.get();
             existingBoard.setB_title(updatedBoard.getB_title());
             existingBoard.setB_content(updatedBoard.getB_content());
             existingBoard.setUid(updatedBoard.getUid());
@@ -55,9 +55,9 @@ public class BoardService {
     }
 
     public Board recommendIncrease(Long bid) {
-        Optional<Board> postOptional = boardRepository.findById(bid);
-        if (postOptional.isPresent()) {
-            Board existingBoard = postOptional.get();
+        Optional<Board> boardOptional = boardRepository.findById(bid);
+        if (boardOptional.isPresent()) {
+            Board existingBoard = boardOptional.get();
             existingBoard.setB_recommendations(existingBoard.getB_recommendations()+1);
             return boardRepository.save(existingBoard);
         } else {

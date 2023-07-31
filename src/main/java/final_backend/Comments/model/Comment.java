@@ -15,8 +15,7 @@ public class Comment {
     private String uid;
     private String nickName;
 
-    // 게시글과 댓글 간의 관계 설정
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "bid")
-//    private Board boardDTO;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bid")
+    private Board boardDTO;
 }
