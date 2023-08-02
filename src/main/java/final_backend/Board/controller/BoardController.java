@@ -23,12 +23,20 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
+    @GetMapping("/myboard/{nickname}")
+    public ResponseEntity<List<Board>> getMyPosts(@PathVariable String nickname) {
+        List<Board> boards = boardService.getMyBoards(nickname);
+        return ResponseEntity.ok(boards);
+    }
+
     @GetMapping("/{bid}")
     public ResponseEntity<Board> getPostById(@PathVariable("bid") Long bid) {
         Optional<Board> board = boardService.getBoardById(bid);
         boardService.increaseViewCount(board.get());
+//        System.out.println(bid+"조회됨");
         return board.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
 
     @PostMapping
     public ResponseEntity<Board> createPost(@RequestBody Board board) {
@@ -61,6 +69,8 @@ public class BoardController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 
 //    public ResponseEntity<Board> viewIncrease(@PathVariable("bid") Long bid) {
 //        Board updatedBoardEntity = boardService.increaseViewCount(getPostById(bid));

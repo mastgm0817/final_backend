@@ -51,6 +51,7 @@ public class BoardService {
 
     public Board increaseViewCount(Board board) {
         board.setB_views(board.getB_views() + 1);
+        System.out.println(board.getBid()+"조회됨");
         return boardRepository.save(board);
     }
 
@@ -59,9 +60,16 @@ public class BoardService {
         if (boardOptional.isPresent()) {
             Board existingBoard = boardOptional.get();
             existingBoard.setB_recommendations(existingBoard.getB_recommendations()+1);
+            System.out.println(bid +" 번 게시글 추천됨");
             return boardRepository.save(existingBoard);
         } else {
             return null;
         }
     }
+
+    public List<Board> getMyBoards(String nickname) {
+        List<Board> myboards = boardRepository.findByNickName(nickname);
+        return myboards;
+    }
+
 }
