@@ -19,37 +19,67 @@ public class BoardController {
 
     @GetMapping
     public ResponseEntity<List<Board>> getAllPosts() {
-        List<Board> boards = boardService.getAllPosts();
+        List<Board> boards = boardService.getAllBoards();
+        return ResponseEntity.ok(boards);
+    }
+
+    @GetMapping("/myboard/{nickname}")
+    public ResponseEntity<List<Board>> getMyPosts(@PathVariable String nickname) {
+        List<Board> boards = boardService.getMyBoards(nickname);
         return ResponseEntity.ok(boards);
     }
 
     @GetMapping("/{bid}")
     public ResponseEntity<Board> getPostById(@PathVariable("bid") Long bid) {
-        Optional<Board> post = boardService.getPostById(bid);
-        return post.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        Optional<Board> board = boardService.getBoardById(bid);
+        boardService.increaseViewCount(board.get());
+//        System.out.println(bid+"조회됨");
+        return board.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
 
     @PostMapping
     public ResponseEntity<Board> createPost(@RequestBody Board board) {
-        Board createdBoard = boardService.createPost(board);
+        Board createdBoard = boardService.createBoard(board);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
     }
 
     @DeleteMapping("/{bid}")
     public ResponseEntity<Void> deletePost(@PathVariable("bid") Long bid) {
-        boardService.deletePost(bid);
+        boardService.deleteBoard(bid);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{bid}")
     public ResponseEntity<Board> updatePost(@PathVariable("bid") Long bid, @RequestBody Board updatedBoard) {
-        Board updatedBoardEntity = boardService.updatePost(bid, updatedBoard);
+        Board updatedBoardEntity = boardService.updateBoard(bid, updatedBoard);
         if (updatedBoardEntity != null) {
             return ResponseEntity.ok(updatedBoardEntity);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{bid}/recommend")
+    public ResponseEntity<Board> recommendPost(@PathVariable("bid") Long bid) {
+        Board updatedBoardEntity = boardService.recommendIncrease(bid);
+        if (updatedBoardEntity != null) {
+            return ResponseEntity.ok(updatedBoardEntity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+
+//    public ResponseEntity<Board> viewIncrease(@PathVariable("bid") Long bid) {
+//        Board updatedBoardEntity = boardService.increaseViewCount(getPostById(bid));
+//        if (updatedBoardEntity != null) {
+//            return ResponseEntity.ok(updatedBoardEntity);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
 
 }

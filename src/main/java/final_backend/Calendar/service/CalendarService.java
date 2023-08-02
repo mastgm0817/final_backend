@@ -39,9 +39,26 @@ public class CalendarService {
         return calendarRepository.findById(scheduleId).orElse(null);
     }
 
-    public void deleteMySchedule (Long scheduleId) {
+
+    public void deleteMySchedule(Long scheduleId) {
         calendarRepository.deleteById(scheduleId);
     }
+
+    // 공유하지 않는 것만 삭제
+    public boolean deleteSchedule(Long scheduleId, String nickName, boolean shared) {
+        CalendarDTO calendarDTO = calendarRepository.findById(scheduleId).orElse(null);
+
+        if (calendarDTO == null) {
+            return false;
+        }
+        if (!calendarDTO.getWriterId().equals(nickName) || (shared && calendarDTO.isShared())) {
+            return false;
+        }
+
+        calendarRepository.deleteById(scheduleId);
+        return true;
+    }
+
 
     public List<CalendarDTO> getScheduleByNickName(String nickname) {
         return calendarRepository.findByWriterId(nickname);

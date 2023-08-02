@@ -21,12 +21,13 @@ public class Board {
     private String b_content;
     private LocalDateTime b_createdAt;
     private LocalDateTime b_updatedAt;
-    private Long b_views; /* 조회수 */
-    private Long comments; /* 댓글 달린 갯수 */
-    private Long b_recommendations; /* 추천수 */
+    private Long b_views;
+    private Long comments;
+    private Long b_recommendations;
 
-//    private List<Comment> commentList;
-//    /* 댓글의 postDTO와 맵핑 */
-//    @OneToMany(mappedBy = "postDTO", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Comment> commentList;
+    /* 댓글의 postDTO와 맵핑 */
+
 
 }
