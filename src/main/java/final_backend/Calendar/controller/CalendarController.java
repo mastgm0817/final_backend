@@ -83,6 +83,7 @@ public class CalendarController {
         }
     }
 
+    // 삭제
     @DeleteMapping("/{nickName}/{scheduleId}")
     public ResponseEntity<String> deleteSchedule(@PathVariable("nickName") String nickName,
                                                  @PathVariable("scheduleId") Long scheduleId,
