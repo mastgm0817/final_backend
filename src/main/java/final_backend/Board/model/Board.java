@@ -1,5 +1,6 @@
 package final_backend.Board.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import final_backend.Comments.model.Comment;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name="board")
 public class Board {
 
     @Id
@@ -24,10 +26,10 @@ public class Board {
     private Long b_views;
     private Long comments;
     private Long b_recommendations;
-
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+//
+    @JsonManagedReference
+    @OneToMany(mappedBy = "boardDTO", cascade = CascadeType.ALL)
     private List<Comment> commentList;
-    /* 댓글의 postDTO와 맵핑 */
 
 
 }
