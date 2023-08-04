@@ -2,7 +2,7 @@ name: final project backendpart CI/CD with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "release" ]
 
 jobs:
   build:
