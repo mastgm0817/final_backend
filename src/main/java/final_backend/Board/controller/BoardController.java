@@ -1,6 +1,10 @@
 package final_backend.Board.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,7 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/api/boards")
 public class BoardController {
+    private static final int DEFAULT_SIZE=15;
     @Autowired
     private BoardService boardService;
 
@@ -23,10 +28,11 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    @GetMapping("/myboard/{nickname}")
-    public ResponseEntity<List<Board>> getMyBoards(@PathVariable String nickname) {
-        List<Board> boards = boardService.getMyBoards(nickname);
-        return ResponseEntity.ok(boards);
+    @GetMapping("/page/{page}")
+    public ResponseEntity<List<Board>> getBoards(Long cursorId, Integer size, @PathVariable int page){
+        if (size==null) size=DEFAULT_SIZE;
+        List<Board> pagedBoardList=(boardService.getBoard(cursorId, PageRequest.of(page=page,size))).getValues();
+        return ResponseEntity.ok(pagedBoardList);
     }
 
     @GetMapping("/{bid}")
@@ -35,7 +41,6 @@ public class BoardController {
         boardService.increaseViewCount(board.get());
         return board.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-
 
     @PostMapping
     public ResponseEntity<Board> createBoard(@RequestBody Board board) {
@@ -68,9 +73,4 @@ public class BoardController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
-
-
-
 }
