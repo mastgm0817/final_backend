@@ -29,10 +29,10 @@ public class BoardController {
     }
 
     @GetMapping("/page/{page}")
-    public List<Board> getBoards(Long cursorId, Integer size, @PathVariable int page){
+    public ResponseEntity<List<Board>> getBoards(Long cursorId, Integer size, @PathVariable int page){
         if (size==null) size=DEFAULT_SIZE;
         List<Board> pagedBoardList=(boardService.getBoard(cursorId, PageRequest.of(page=page,size))).getValues();
-        return pagedBoardList;
+        return ResponseEntity.ok(pagedBoardList);
     }
 
     @GetMapping("/{bid}")
