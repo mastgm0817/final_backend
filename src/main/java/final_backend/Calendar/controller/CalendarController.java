@@ -1,6 +1,5 @@
 package final_backend.Calendar.controller;
 
-
 import final_backend.Calendar.model.CalendarDTO;
 import final_backend.Calendar.model.CalendarRequestDTO;
 import final_backend.Calendar.service.CalendarService;
@@ -48,8 +47,8 @@ public class CalendarController {
     @GetMapping("/{nickName}")
     public ResponseEntity<List<CalendarDTO>> getAllScheduleByName(@PathVariable("nickName") String nickName) {
         User user = userService.findByNickName(nickName);
-        String loverName = user.getLover();
         if (user != null) {
+            String loverName = user.getLover();
             List<CalendarDTO> schedules = calendarService.getScheduleByNickName(nickName);
             List<CalendarDTO> sharedSchedules = calendarService.getSharedSchedulesByLoverName(user);
             List<CalendarDTO> allSchedules= new ArrayList<>();
@@ -84,13 +83,23 @@ public class CalendarController {
         }
     }
 
-//
-//    @PostMapping("/deleteSchedule/userName={userName}/scheduleId={scheduleId}")
-//    public ResponseEntity<String> deleteSchedule(@PathVariable("userName") String userName,
-//                                                 @PathVariable("scheduleId") Long scheduleId,
-//                                                 @RequestParam("shared") boolean shared) {
-//        User user = userService.findByUserName(userName);
-//
-//
-//    }
+    // 삭제
+    @DeleteMapping("/{nickName}/{scheduleId}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable("nickName") String nickName,
+                                                 @PathVariable("scheduleId") Long scheduleId,
+                                                 @RequestParam("shared") boolean shared) {
+        User user = userService.findByNickName(nickName);
+
+        if (user != null) {
+            boolean isDeleted = calendarService.deleteSchedule(scheduleId, nickName, shared);
+            if (isDeleted) {
+                return ResponseEntity.ok("Schedule deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Schedule not found or not eligible for deletion");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }
