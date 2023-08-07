@@ -1,6 +1,10 @@
 package final_backend.Board.service;
 
+import final_backend.Board.controller.CursorResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import final_backend.Board.model.Board;
 import final_backend.Board.respository.BoardRepository;
@@ -15,7 +19,7 @@ public class BoardService {
     private BoardRepository boardRepository;
 
     public List<Board> getAllBoards() {
-        return boardRepository.findAll();
+        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "bid"));
     }
 
     public Optional<Board> getBoardById(Long bid) {
@@ -67,9 +71,31 @@ public class BoardService {
         }
     }
 
-    public List<Board> getMyBoards(String nickname) {
-        List<Board> myboards = boardRepository.findByNickName(nickname);
-        return myboards;
+    public Page<Board> boardList(Pageable pageable) {
+        return boardRepository.findAll(pageable);
     }
+
+    public CursorResult<Board> getBoard(Long cursorId, Pageable page){
+        final List<Board> boards = getBoards(cursorId, page);
+        final Long lastIdOfList = boards.isEmpty() ?
+                null : boards.get(boards.size() - 1).getBid();
+
+        return new CursorResult<Board>(boards, hasNext(lastIdOfList));
+    }
+    private List<Board> getBoards(Long bid, Pageable page) {
+        return bid == null ?
+                boardRepository.findAllByOrderByBidDesc(page) :
+                boardRepository.findByBidLessThanOrderByBidDesc(bid, page);
+    }
+
+    private Boolean hasNext(Long bid) {
+        if (bid == null) return false;
+        return boardRepository.existsByBidLessThan(bid);
+    }
+
+//    public List<Board> getMyBoards(String nickname) {
+//        List<Board> myboards = boardRepository.findByNickName(nickname);
+//        return myboards;
+//    }
 
 }
