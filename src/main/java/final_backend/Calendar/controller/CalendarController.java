@@ -1,6 +1,5 @@
 package final_backend.Calendar.controller;
 
-
 import final_backend.Calendar.model.CalendarDTO;
 import final_backend.Calendar.model.CalendarRequestDTO;
 import final_backend.Calendar.service.CalendarService;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin()
 @RequestMapping("/calendar")
 public class CalendarController {
     @Autowired
@@ -48,8 +47,8 @@ public class CalendarController {
     @GetMapping("/{nickName}")
     public ResponseEntity<List<CalendarDTO>> getAllScheduleByName(@PathVariable("nickName") String nickName) {
         User user = userService.findByNickName(nickName);
-        String loverName = user.getLover();
         if (user != null) {
+            String loverName = user.getLover();
             List<CalendarDTO> schedules = calendarService.getScheduleByNickName(nickName);
             List<CalendarDTO> sharedSchedules = calendarService.getSharedSchedulesByLoverName(user);
             List<CalendarDTO> allSchedules= new ArrayList<>();

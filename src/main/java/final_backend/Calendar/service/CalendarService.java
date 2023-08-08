@@ -54,14 +54,16 @@ public class CalendarService {
         return true;
     }
 
+
     public List<CalendarDTO> getScheduleByNickName(String nickname) {
         return calendarRepository.findByWriterId(nickname);
     }
+
     public CalendarDTO updateSchedule(Long scheduleId, String nickName, LocalDate date, String schedule, boolean shared, String loverName) {
         CalendarDTO calendarDTO = calendarRepository.findById(scheduleId).orElse(null);
 
         if (calendarDTO == null) {
-            return null; // 혹은 예외 처리 등을 수행
+            return null;
         }
         calendarDTO.setWriterId(nickName);
         calendarDTO.setScheduleDate(date);
