@@ -39,7 +39,6 @@ public class CalendarService {
         return calendarRepository.findById(scheduleId).orElse(null);
     }
 
-
     // 삭제 기능
     public boolean deleteSchedule(Long scheduleId, String nickName, boolean shared) {
         CalendarDTO calendarDTO = calendarRepository.findById(scheduleId).orElse(null);
