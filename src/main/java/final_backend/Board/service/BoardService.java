@@ -1,6 +1,6 @@
 package final_backend.Board.service;
 
-import final_backend.Board.controller.CursorResult;
+import final_backend.Board.model.CursorResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
