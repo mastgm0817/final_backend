@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("https://luvoost.co.kr")
-@RequestMapping("/api/coupon/")
+@RequestMapping("/api/coupon")
 public class CouponController {
 
     private final CouponService couponService;
