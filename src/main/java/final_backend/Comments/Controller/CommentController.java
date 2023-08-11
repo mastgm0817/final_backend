@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/boards/{bid}/comments")
+@RequestMapping("/api/v1/boards/{bid}/comments")
 public class CommentController {
     @Autowired
     private CommentService commentService;
