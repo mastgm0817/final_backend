@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin()
-@RequestMapping("/calendar")
+@CrossOrigin
+@RequestMapping("/api/v1/calendar")
 public class CalendarController {
     @Autowired
     private CalendarService calendarService;
@@ -51,7 +51,7 @@ public class CalendarController {
             String loverName = user.getLover();
             List<CalendarDTO> schedules = calendarService.getScheduleByNickName(nickName);
             List<CalendarDTO> sharedSchedules = calendarService.getSharedSchedulesByLoverName(user);
-            List<CalendarDTO> allSchedules= new ArrayList<>();
+            List<CalendarDTO> allSchedules = new ArrayList<>();
 
             allSchedules.addAll(schedules);
             allSchedules.addAll(sharedSchedules);
@@ -71,7 +71,7 @@ public class CalendarController {
 
         if (user != null) {
             String loverName = user.getLover();
-            CalendarDTO updatedSchedule = calendarService.updateSchedule(scheduleId, nickName, RequestDTO.getDate(), RequestDTO.getSchedule(), RequestDTO.isShare(), loverName );
+            CalendarDTO updatedSchedule = calendarService.updateSchedule(scheduleId, nickName, RequestDTO.getDate(), RequestDTO.getSchedule(), RequestDTO.isShare(), loverName);
 
             if (updatedSchedule != null) {
                 return ResponseEntity.ok("Schedule updated successfully");
@@ -101,5 +101,4 @@ public class CalendarController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
 }
