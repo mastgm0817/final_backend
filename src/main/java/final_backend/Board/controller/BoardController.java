@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/boards")
+@RequestMapping("/api/v1/boards")
 public class BoardController {
     private static final int DEFAULT_SIZE=15;
     @Autowired
