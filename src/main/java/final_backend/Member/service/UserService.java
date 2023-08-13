@@ -1,8 +1,9 @@
 package final_backend.Member.service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 import final_backend.Member.model.User;
 import final_backend.Member.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -23,6 +24,10 @@ public class UserService {
 
     public User findByNickName(String name) {
         return userRepository.findByNickName(name);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public boolean deleteUser(Long userId) {

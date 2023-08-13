@@ -1,8 +1,8 @@
 package final_backend.Member.repository;
 
+import final_backend.Member.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import final_backend.Member.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

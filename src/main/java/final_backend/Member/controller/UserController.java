@@ -1,11 +1,12 @@
 package final_backend.Member.controller;
 
+import final_backend.Member.model.User;
+import final_backend.Member.model.UserJoinRequest;
+import final_backend.Member.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import final_backend.Member.model.User;
-import final_backend.Member.service.UserService;
 
 import java.util.List;
 
@@ -21,6 +22,20 @@ public class UserController {
         User createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+
+    @PostMapping("/users/join")
+    public ResponseEntity<String> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
+        User existingUser = userService.findByEmail(userJoinRequest.getEmail());
+        // 이미 가입된 회원일 때
+        if (existingUser != null) {
+            return new ResponseEntity<>("User with the provided email already exists.", HttpStatus.BAD_REQUEST);
+        } else {
+            User newUser = userJoinRequest.toUser(); // 신규 유저 객체 생성
+            userService.createUser(newUser); // 유저 저장
+            return new ResponseEntity<>("User created successfully.", HttpStatus.CREATED);
+        }
+    }
+
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
