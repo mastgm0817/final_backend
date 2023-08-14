@@ -18,12 +18,12 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Boolean existsByBidLessThan(Long bid);
 
-    Page<Board> findByBContentContainingOrderByBidDesc(String b_content, Pageable pageable);
+    List<Board> findAllByNickNameContainingOrderByBidDesc(String b_content, Pageable pageable);
 
 
-    Page<Board> findByNickNameContainingOrderByBidDesc(String nickName, Pageable pageable);
+    List<Board> findAllByBContentContainingOrderByBidDesc(String nickName, Pageable pageable);
 
 
-    Page<Board> findByBTitleContainingOrderByBidDesc(String b_title, Pageable pageable);
+    List<Board> findAllByBTitleContainingOrderByBidDesc(String b_title, Pageable pageable);
 
 }

@@ -28,14 +28,14 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    @GetMapping("/page/{page}/{getMethod}/")
+    @GetMapping("/page/{page}/{findingMethod}/")
     public ResponseEntity<List<Board>> getBoards(Long cursorId, Integer size,
                                                  @PathVariable int page,
-                                                 @PathVariable String getMethod,
+                                                 @PathVariable String findingMethod,
                                                  @RequestParam(required = false) String findStr
     ){
         if (size==null) size=DEFAULT_SIZE;
-        List<Board> pagedBoardList=(boardService.getBoard(cursorId, PageRequest.of(page=page,size))).getValues();
+        List<Board> pagedBoardList=(boardService.getBoard(cursorId, PageRequest.of(page=page,size), findStr, findingMethod)).getValues();
         return ResponseEntity.ok(pagedBoardList);
     }
 

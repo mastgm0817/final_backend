@@ -27,28 +27,36 @@ public class BoardService {
     }
 
 
-    public CursorResult<Board> getBoard(Long cursorId, Pageable page){
-        final List<Board> boards = getBoards(cursorId, page);
+    public CursorResult<Board> getBoard(Long cursorId, Pageable page, String findStr, String findingMethod){
+        final List<Board> boards = getBoards(cursorId, page, findStr, findingMethod);
         final Long lastIdOfList = boards.isEmpty() ?
                 null : boards.get(boards.size() - 1).getBid();
 
         return new CursorResult<Board>(boards, hasNext(lastIdOfList));
     }
-    public Page<Board> boardList(Pageable pageable, String findStr, String findingMethod) {
-        if ("nickname".equals(findingMethod)) {
-            return boardRepository.findByNickNameContainingOrderByBidDesc(findStr, pageable);
+//    public Page<Board> boardList(Pageable pageable, String findStr, String findingMethod) {
+//        if ("nickname".equals(findingMethod)) {
+//            return boardRepository.findByNickNameContainingOrderByBidDesc(findStr, pageable);
+//        } else if ("content".equals(findingMethod)) {
+//            return boardRepository.findByBContentContainingOrderByBidDesc(findStr, pageable);
+//        } else if ("title".equals(findingMethod)) {
+//            return boardRepository.findByBTitleContainingOrderByBidDesc(findStr, pageable);
+//        } else{
+//            return boardRepository.findAll(pageable);
+//        }
+//    }
+    private List<Board> getBoards(Long bid, Pageable page, String findStr, String findingMethod) {
+
+        if (bid == null){
+            boardRepository.findAllByOrderByBidDesc(page);
+        } else if ("nickname".equals(findingMethod)) {
+            return boardRepository.findAllByNickNameContainingOrderByBidDesc(findStr, page);
         } else if ("content".equals(findingMethod)) {
-            return boardRepository.findByBContentContainingOrderByBidDesc(findStr, pageable);
+            return boardRepository.findAllByBContentContainingOrderByBidDesc(findStr, page);
         } else if ("title".equals(findingMethod)) {
-            return boardRepository.findByBTitleContainingOrderByBidDesc(findStr, pageable);
-        } else{
-            return boardRepository.findAll(pageable);
+            return boardRepository.findAllByBTitleContainingOrderByBidDesc(findStr, page);
         }
-    }
-    private List<Board> getBoards(Long bid, Pageable page) {
-        return bid == null ?
-                boardRepository.findAllByOrderByBidDesc(page) :
-                boardRepository.findByBidLessThanOrderByBidDesc(bid, page);
+        return boardRepository.findByBidLessThanOrderByBidDesc(bid, page);
     }
 
     private Boolean hasNext(Long bid) {
