@@ -10,9 +10,10 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin
+@RequestMapping("/api/v1/predict")
 public class PredictController {
 
-    @PostMapping("/predict")
+    @PostMapping
     public String predict(@RequestBody PredictDTO predictDTO) {
         // Flask 서버의 URL 설정
         String flaskServerUrl = "http://127.0.0.1:5000/predict"; // 실제 Flask 서버의 URL로 변경해주세요

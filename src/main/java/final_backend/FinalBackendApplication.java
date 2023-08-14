@@ -9,5 +9,10 @@ public class FinalBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FinalBackendApplication.class, args);
 	}
-
+//	@Bean
+//	public ServletListenerRegistrationBean<VisitorCounterListener> listenerRegistrationBean() {
+//		ServletListenerRegistrationBean<VisitorCounterListener> listenerBean =
+//				new ServletListenerRegistrationBean<>();
+//		listenerBean.setListener(new VisitorCounterListener());
+//		return listenerBean;
 }

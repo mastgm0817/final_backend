@@ -2,9 +2,9 @@ package final_backend.Calendar.controller;
 
 import final_backend.Calendar.model.CalendarDTO;
 import final_backend.Calendar.model.CalendarRequestDTO;
-import final_backend.Calendar.service.CalendarService;
+import final_backend.Calendar.service.CalendarServiceImpl;
 import final_backend.Member.model.User;
-import final_backend.Member.service.UserService;
+import final_backend.Member.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,24 +18,23 @@ import java.util.List;
 @RequestMapping("/api/v1/calendar")
 public class CalendarController {
     @Autowired
-    private CalendarService calendarService;
+    private CalendarServiceImpl calendarServiceImpl;
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @PostMapping("/{nickName}")
     public ResponseEntity<String> createSchedule(
             @PathVariable("nickName") String nickName,
             @RequestBody CalendarRequestDTO requestDTO) {
-        User user = userService.findByNickName(nickName);
+        User user = userServiceImpl.findByNickName(nickName);
         if (user != null) {
             System.out.println(user);
-            String loverName = user.getLover();
             CalendarDTO calendarDTO;
             System.out.println(user);
             if (requestDTO.isShare()) {
-                calendarDTO = calendarService.CreateMySchedule(nickName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), loverName);
+                calendarDTO = calendarServiceImpl.CreateMySchedule(nickName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), user.getLover());
             } else {
-                calendarDTO = calendarService.CreateMySchedule(nickName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), "");
+                calendarDTO = calendarServiceImpl.CreateMySchedule(nickName, requestDTO.getDate(), requestDTO.getSchedule(), requestDTO.isShare(), "");
             }
             System.out.println(calendarDTO);
             return ResponseEntity.ok("user");
@@ -46,11 +45,11 @@ public class CalendarController {
 
     @GetMapping("/{nickName}")
     public ResponseEntity<List<CalendarDTO>> getAllScheduleByName(@PathVariable("nickName") String nickName) {
-        User user = userService.findByNickName(nickName);
+        User user = userServiceImpl.findByNickName(nickName);
         if (user != null) {
             String loverName = user.getLover();
-            List<CalendarDTO> schedules = calendarService.getScheduleByNickName(nickName);
-            List<CalendarDTO> sharedSchedules = calendarService.getSharedSchedulesByLoverName(user);
+            List<CalendarDTO> schedules = calendarServiceImpl.getScheduleByNickName(nickName);
+            List<CalendarDTO> sharedSchedules = calendarServiceImpl.getSharedSchedulesByLoverName(user);
             List<CalendarDTO> allSchedules = new ArrayList<>();
 
             allSchedules.addAll(schedules);
@@ -67,11 +66,11 @@ public class CalendarController {
     public ResponseEntity<String> updateSchedule(@PathVariable("nickName") String nickName,
                                                  @PathVariable("scheduleId") Long scheduleId,
                                                  @RequestBody CalendarRequestDTO RequestDTO) {
-        User user = userService.findByNickName(nickName);
+        User user = userServiceImpl.findByNickName(nickName);
 
         if (user != null) {
             String loverName = user.getLover();
-            CalendarDTO updatedSchedule = calendarService.updateSchedule(scheduleId, nickName, RequestDTO.getDate(), RequestDTO.getSchedule(), RequestDTO.isShare(), loverName);
+            CalendarDTO updatedSchedule = calendarServiceImpl.updateSchedule(scheduleId, nickName, RequestDTO.getDate(), RequestDTO.getSchedule(), RequestDTO.isShare(), loverName);
 
             if (updatedSchedule != null) {
                 return ResponseEntity.ok("Schedule updated successfully");
@@ -88,10 +87,10 @@ public class CalendarController {
     public ResponseEntity<String> deleteSchedule(@PathVariable("nickName") String nickName,
                                                  @PathVariable("scheduleId") Long scheduleId,
                                                  @RequestParam("shared") boolean shared) {
-        User user = userService.findByNickName(nickName);
+        User user = userServiceImpl.findByNickName(nickName);
 
         if (user != null) {
-            boolean isDeleted = calendarService.deleteSchedule(scheduleId, nickName, shared);
+            boolean isDeleted = calendarServiceImpl.deleteSchedule(scheduleId, nickName, shared);
             if (isDeleted) {
                 return ResponseEntity.ok("Schedule deleted successfully");
             } else {
