@@ -66,6 +66,11 @@ public class UserController {
         }
     }
 
+    @PostMapping("/users/login")
+    public ResponseEntity<String> login(){
+        return ResponseEntity.ok().body(userService.login("",""));
+    }
+
 
 
 }
