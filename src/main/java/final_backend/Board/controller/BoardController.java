@@ -28,8 +28,12 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    @GetMapping("/page/{page}")
-    public ResponseEntity<List<Board>> getBoards(Long cursorId, Integer size, @PathVariable int page){
+    @GetMapping("/page/{page}/{getMethod}/")
+    public ResponseEntity<List<Board>> getBoards(Long cursorId, Integer size,
+                                                 @PathVariable int page,
+                                                 @PathVariable String getMethod,
+                                                 @RequestParam(required = false) String findStr
+    ){
         if (size==null) size=DEFAULT_SIZE;
         List<Board> pagedBoardList=(boardService.getBoard(cursorId, PageRequest.of(page=page,size))).getValues();
         return ResponseEntity.ok(pagedBoardList);

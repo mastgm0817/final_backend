@@ -26,6 +26,36 @@ public class BoardService {
         return boardRepository.findById(bid);
     }
 
+
+    public CursorResult<Board> getBoard(Long cursorId, Pageable page){
+        final List<Board> boards = getBoards(cursorId, page);
+        final Long lastIdOfList = boards.isEmpty() ?
+                null : boards.get(boards.size() - 1).getBid();
+
+        return new CursorResult<Board>(boards, hasNext(lastIdOfList));
+    }
+    public Page<Board> boardList(Pageable pageable, String findStr, String findingMethod) {
+        if ("nickname".equals(findingMethod)) {
+            return boardRepository.findByNickNameContainingOrderByBidDesc(findStr, pageable);
+        } else if ("content".equals(findingMethod)) {
+            return boardRepository.findByBContentContainingOrderByBidDesc(findStr, pageable);
+        } else if ("title".equals(findingMethod)) {
+            return boardRepository.findByBTitleContainingOrderByBidDesc(findStr, pageable);
+        } else{
+            return boardRepository.findAll(pageable);
+        }
+    }
+    private List<Board> getBoards(Long bid, Pageable page) {
+        return bid == null ?
+                boardRepository.findAllByOrderByBidDesc(page) :
+                boardRepository.findByBidLessThanOrderByBidDesc(bid, page);
+    }
+
+    private Boolean hasNext(Long bid) {
+        if (bid == null) return false;
+        return boardRepository.existsByBidLessThan(bid);
+    }
+
     public Board createBoard(Board board) {
         LocalDateTime currentTime = LocalDateTime.now();
         board.setB_createdAt(currentTime);
@@ -43,8 +73,8 @@ public class BoardService {
         Optional<Board> boardOptional = boardRepository.findById(bid);
         if (boardOptional.isPresent()) {
             Board existingBoard = boardOptional.get();
-            existingBoard.setB_title(updatedBoard.getB_title());
-            existingBoard.setB_content(updatedBoard.getB_content());
+            existingBoard.setBTitle(updatedBoard.getBTitle());
+            existingBoard.setBContent(updatedBoard.getBContent());
             existingBoard.setUid(updatedBoard.getUid());
             existingBoard.setB_updatedAt(LocalDateTime.now());
             return boardRepository.save(existingBoard);
@@ -71,27 +101,6 @@ public class BoardService {
         }
     }
 
-    public Page<Board> boardList(Pageable pageable) {
-        return boardRepository.findAll(pageable);
-    }
-
-    public CursorResult<Board> getBoard(Long cursorId, Pageable page){
-        final List<Board> boards = getBoards(cursorId, page);
-        final Long lastIdOfList = boards.isEmpty() ?
-                null : boards.get(boards.size() - 1).getBid();
-
-        return new CursorResult<Board>(boards, hasNext(lastIdOfList));
-    }
-    private List<Board> getBoards(Long bid, Pageable page) {
-        return bid == null ?
-                boardRepository.findAllByOrderByBidDesc(page) :
-                boardRepository.findByBidLessThanOrderByBidDesc(bid, page);
-    }
-
-    private Boolean hasNext(Long bid) {
-        if (bid == null) return false;
-        return boardRepository.existsByBidLessThan(bid);
-    }
 
 //    public List<Board> getMyBoards(String nickname) {
 //        List<Board> myboards = boardRepository.findByNickName(nickname);
