@@ -1,8 +1,11 @@
 package final_backend.Member.service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 import final_backend.Member.model.User;
 import final_backend.Member.repository.UserRepository;
+import final_backend.Utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -25,6 +28,10 @@ public class UserService {
         return userRepository.findByNickName(name);
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public boolean deleteUser(Long userId) {
         User user = userRepository.findByUid(userId);
         if (user != null) {
@@ -43,7 +50,13 @@ public class UserService {
         }
         return null;
     }
-
-
-
+    public String findByProviderName(String providerName) {
+        return userRepository.findByProviderName(providerName);
+    }
+    @Value("${jwt.secret}")
+    private String secretKey;
+    private Long expiredMs = 1000 * 60 * 60l;
+    public String login(String userName, String password){
+        return JwtUtil.createJwt(userName,secretKey, expiredMs);
+    }
 }
