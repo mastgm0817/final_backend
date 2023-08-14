@@ -4,14 +4,15 @@ import lombok.Data;
 
 @Data
 public class UserJoinRequest {
-    private String provider; // 추가된 필드
+    private String providerName;
     private String nickName;
     private String email;
     private String profileImage;
 
-    public User toUser() {
+    public User toUser(String providerName) {
         return User.builder()
                 .nickName(nickName)
+                .providerName((providerName))
                 .email(email)
                 .profileImage(profileImage)
                 .userRole(UserRole.Normal) // 기본 역할 설정

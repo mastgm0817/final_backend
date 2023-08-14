@@ -27,10 +27,11 @@ public class UserController {
     public ResponseEntity<String> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
         User existingUser = userService.findByEmail(userJoinRequest.getEmail());
         // 이미 가입된 회원일 때
-        if (existingUser != null) {
-            return new ResponseEntity<>("User with the provided email already exists.", HttpStatus.BAD_REQUEST);
-        } else {
-            User newUser = userJoinRequest.toUser(); // 신규 유저 객체 생성
+        if (existingUser != null) { // 사용자가 존재하는지 확인
+            return new ResponseEntity<>("User with the provided email already exists.", HttpStatus.OK);
+        }
+        else{
+            User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName()); // 신규 유저 객체 생성
             userService.createUser(newUser); // 유저 저장
             return new ResponseEntity<>("User created successfully.", HttpStatus.CREATED);
         }

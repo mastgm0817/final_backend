@@ -50,5 +50,7 @@ public class UserService {
     }
 
 
-
+    public String findByProviderName(String providerName) {
+        return userRepository.findByProviderName(providerName);
+    }
 }
