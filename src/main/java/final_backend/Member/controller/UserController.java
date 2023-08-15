@@ -57,16 +57,17 @@ public class UserController {
     }
 
     @PostMapping("/users/join")
-    public ResponseEntity<String> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
+    public ResponseEntity<TokenResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
         User existingUser = userService.findByEmail(userJoinRequest.getEmail());
         // 이미 가입된 회원일 때
         if (existingUser != null) { // 사용자가 존재하는지 확인
-            return new ResponseEntity<>("User with the provided email already exists.", HttpStatus.OK);
+            return new ResponseEntity<>(new TokenResponse("User with the provided email already exists."), HttpStatus.OK);
         }
         else{
             User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName()); // 신규 유저 객체 생성
-            userService.createUser(newUser); // 유저 저장
-            return new ResponseEntity<>("User created successfully.", HttpStatus.CREATED);
+            userService.createUser(newUser);
+            String token = userService.login(newUser.getNickName(), ""); // 토큰 생성
+            return new ResponseEntity<>(new TokenResponse(token), HttpStatus.CREATED);
         }
     }
 
@@ -74,6 +75,7 @@ public class UserController {
     public ResponseEntity<TokenResponse> login(@RequestBody UserLoginRequest dto){
         User existingUser = userService.findByEmail(dto.getEmail());
         if (existingUser != null) { // 사용자가 존재
+            System.out.println("컨트롤러 지나감");
             String token = userService.login(dto.getNickName(), "");
             return ResponseEntity.ok().body(new TokenResponse(token));
         }
