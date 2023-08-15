@@ -21,10 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
-    // Username Token에서 꺼내기
+
     private final UserService userService;
     private final String secretKey;
-    String userName = "";
+
 
     // 권한 부여
     @Override
@@ -42,14 +42,18 @@ public class JwtFilter extends OncePerRequestFilter {
        // 토큰 꺼내기
         String token = authorization.split(" ")[1];
 
-       // Token Expired 여부
+        // Token Expired 여부
         if(JwtUtil.isExpired(token, secretKey)){
             log.error("Token이 만료되었습니다.");
             filterChain.doFilter(request,response);
             return;
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userName, null, List.of(new SimpleGrantedAuthority("Normal")));
+        // nickName Token에서 꺼내기
+        String nickName = JwtUtil.getNickName(token, secretKey);
+        log.info("nickName:{}",nickName);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(nickName, null, List.of(new SimpleGrantedAuthority("Normal")));
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);
