@@ -21,10 +21,10 @@ jobs:
 
     - name: Configure Docker daemon
       run: |
-        echo '{ "insecure-registries": ["180.150.207.73:5000"] }' | sudo tee /etc/docker/daemon.json
+        echo '{ "insecure-registries": ["119.197.27.55:5000"] }' | sudo tee /etc/docker/daemon.json
         sudo systemctl restart docker
     - name: Login to Docker registry
-      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 180.150.207.73:5000
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 119.197.27.55:5000
     - name: Build and Push Docker image
       id: docker_build
       uses: docker/build-push-action@v2
@@ -32,8 +32,8 @@ jobs:
         context: .
         push: true
         tags: |
-          180.150.207.73:5000/backend:${{ github.sha }}
-          180.150.207.73:5000/backend:latest
+          119.197.27.55:5000/backend:${{ github.sha }}
+          119.197.27.55:5000/backend:latest
           
     - name: Save image digest
       run: echo "${{ steps.docker_build.outputs.digest }}" > image-digest.txt
@@ -57,7 +57,7 @@ jobs:
         - name: Update image in Kubernetes manifest
           run: |
             IMAGE_DIGEST=$(cat image-digest.txt)
-            sed -i "s|image: 180.150.207.73:5000/backend@sha256:[a-zA-Z0-9]*|image: 180.150.207.73:5000/backend@$IMAGE_DIGEST|g" deploy/deployment.yml
+            sed -i "s|image: 119.197.27.55:5000/backend@sha256:[a-zA-Z0-9]*|image: 119.197.27.55:5000/backend@$IMAGE_DIGEST|g" deploy/deployment.yml
         - name: Commit and push changes
           run: |
             git config --local user.email "mastgm0817@gmail.com"

@@ -51,11 +51,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Long userId, User updatedUser) {
-        User existingUser = userRepository.findByUid(userId);
-        if (existingUser != null) {
-            existingUser.setUserName(updatedUser.getUserName());
-            existingUser.setEmail(updatedUser.getEmail());
-            return userRepository.save(existingUser);
+
+        User user = userRepository.findByUid(userId);
+        if (user != null) {
+            user.setUserName(updatedUser.getUserName());
+            user.setEmail(updatedUser.getEmail());
+            return userRepository.save(user);
         }
         return null;
     }
@@ -68,7 +69,10 @@ public class UserServiceImpl implements UserService {
     private String secretKey;
     private Long expiredMs = 1000 * 60 * 60l;
     @Override
-    public String login(String userName, String password){
-        return JwtUtil.createJwt(userName,secretKey, expiredMs);
+
+    public String login(String nickName, String password){
+//        return JwtUtil.createJwt(nickName, email, secretKey, expiredMs);
+        return JwtUtil.createJwt(nickName, secretKey, expiredMs);
+
     }
 }
