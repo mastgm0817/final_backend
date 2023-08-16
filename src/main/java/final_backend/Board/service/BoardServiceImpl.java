@@ -2,6 +2,8 @@ package final_backend.Board.service;
 
 import final_backend.Board.model.CursorResult;
 import final_backend.Member.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import final_backend.Board.model.Board;
 import final_backend.Board.respository.BoardRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +21,10 @@ public class BoardServiceImpl implements BoardService {
 
     public BoardServiceImpl(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
+    }
+
+    public Long getDefaultCursorId() {
+        return boardRepository.findTopByOrderByBidDesc().getBid();
     }
 
     @Override
@@ -32,10 +39,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public CursorResult<Board> getBoard(Long cursorId, Pageable page, String findStr, String findingMethod){
+        if (cursorId==null){cursorId=getDefaultCursorId();}
+        System.out.println("getBoard:"+findingMethod);
+        System.out.println("getBoard:"+findStr);
         final List<Board> boards = getBoardList(cursorId, page, findStr, findingMethod);
         final Long lastIdOfList = boards.isEmpty() ?
                 null : boards.get(boards.size() - 1).getBid();
-
         return new CursorResult<Board>(boards, hasNext(lastIdOfList));
     }
 
@@ -50,12 +59,16 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<Board> getBoardList(Long cursorId, Pageable page, String findStr, String findingMethod) {
-        List<Board> boards;
-        if(findingMethod==null){}
+        System.out.println("getBoardList:"+findingMethod);
+        System.out.println("getBoardList:"+findStr);
+        List<Board> boards = new ArrayList<>();
+        System.out.println(findStr);
+        System.out.println(findingMethod);
         if ("title".equals(findingMethod)) {
-            boards = boardRepository.findByBTitleContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
+            boards = boardRepository.findBybTitleContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
+            System.out.println(boards);
         } else if ("content".equals(findingMethod)) {
-            boards = boardRepository.findByBContentContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
+            boards = boardRepository.findBybContentContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
         } else if ("nickname".equals(findingMethod)) {
             boards = boardRepository.findByNickNameContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
         } else {
@@ -76,6 +89,13 @@ public class BoardServiceImpl implements BoardService {
         if (bid == null) return false;
         return boardRepository.existsByBidLessThan(bid);
     }
+
+//    @Override
+//    public Page<Board> getBoardList(Long bid, Pageable page) {
+//        return bid == null ?
+//                boardRepository.findAllByOrderByBidDesc(page) :
+//                boardRepository.findByBidLessThanOrderByBidDesc(bid, page);
+//    }
 
 
     @Override

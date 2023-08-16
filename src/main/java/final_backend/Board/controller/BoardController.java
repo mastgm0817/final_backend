@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import final_backend.Board.model.Board;
 import final_backend.Board.service.BoardServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +29,21 @@ public class BoardController {
     @GetMapping("/page/{page}")
     public ResponseEntity<List<Board>> getBoards(Long cursorId, Integer size,
                                                  @PathVariable int page,
-                                                 @RequestParam(value="findingMethod", required = false, defaultValue="all") String findingMethod,
-                                                 @RequestParam(value="findstr", required = false) String findStr
-    ){
-        if (size==null) size=DEFAULT_SIZE;
-        if (findingMethod==null || findStr==null){
-            List<Board> pagedBoardList=(boardServiceImpl.getBoard(cursorId, PageRequest.of(page=page,size))).getValues();
+                                                 @RequestParam(value="findingMethod", required = false) String findingMethod,
+                                                 @RequestParam(value="findStr", required = false) String findStr
+    ) {
+        if (size == null) size = DEFAULT_SIZE;
+        if (findingMethod==null) {findingMethod="all";}
+        List<Board> pagedBoardList = new ArrayList<>();
+        if (cursorId == null) cursorId = boardServiceImpl.getDefaultCursorId();
+        if (findStr == null) {
+            pagedBoardList = (boardServiceImpl.getBoard(cursorId, PageRequest.of(page = page, size))).getValues();
         }
-        List<Board> pagedBoardList=(boardServiceImpl.getBoard(cursorId, PageRequest.of(page=page,size), findStr, findingMethod)).getValues();
+        else{
+            System.out.println("controller:"+findingMethod);
+            System.out.println("controller:"+findStr);
+            pagedBoardList = (boardServiceImpl.getBoard(cursorId, PageRequest.of(page = page, size), findStr, findingMethod)).getValues();
+        }
         return ResponseEntity.ok(pagedBoardList);
     }
 
