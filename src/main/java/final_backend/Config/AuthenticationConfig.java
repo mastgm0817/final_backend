@@ -1,6 +1,6 @@
 package final_backend.Config;
 
-import final_backend.Member.service.UserService;
+import final_backend.Member.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class AuthenticationConfig {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Value("${jwt.secret}")
     private String secretKey;
