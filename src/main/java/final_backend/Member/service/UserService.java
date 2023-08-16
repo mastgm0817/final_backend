@@ -19,6 +19,10 @@ public interface UserService {
 
     String findByProviderName(String providerName);
 
-    String login(String nickName, String password);
+    String login(String email, String nickName, String password);
+
+    String refresh(String email, String nickName, String s);
+
+    User validateUser(String email, String password);
 //    String login(String nickName, String email, String password);
 }

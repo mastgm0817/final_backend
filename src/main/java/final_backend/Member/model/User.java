@@ -26,7 +26,6 @@ public class User {
     private String email;
     private String password;
     private String profileImage;
-
     private String providerName;
 
     @Enumerated(EnumType.STRING)
