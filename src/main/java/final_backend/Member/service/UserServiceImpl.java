@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
     private Long expiredMs = 1000 * 60 * 60l;
     @Override
     public String login(String nickName, String password){
-        return JwtUtil.createJwt(nickName,secretKey, expiredMs);
+//        return JwtUtil.createJwt(nickName, email, secretKey, expiredMs);
+        return JwtUtil.createJwt(nickName, secretKey, expiredMs);
     }
 }

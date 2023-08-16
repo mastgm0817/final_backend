@@ -20,4 +20,5 @@ public interface UserService {
     String findByProviderName(String providerName);
 
     String login(String nickName, String password);
+//    String login(String nickName, String email, String password);
 }
