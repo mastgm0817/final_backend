@@ -3,8 +3,7 @@ package final_backend.Calendar.service;
 import final_backend.Calendar.model.CalendarDTO;
 import final_backend.Calendar.repository.CalendarRepository;
 import final_backend.Member.model.User;
-import final_backend.Member.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import final_backend.Member.service.UserServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,15 +11,14 @@ import java.util.List;
 
 @Service
 public class CalendarServiceImpl implements CalendarService {
-    @Autowired
-    private CalendarRepository calendarRepository;
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    public CalendarServiceImpl(CalendarRepository calendarRepository, UserService userService) {
+    private final CalendarRepository calendarRepository;
+
+    private final UserServiceImpl userServiceImpl;
+
+    public CalendarServiceImpl(CalendarRepository calendarRepository, UserServiceImpl userServiceImpl) {
         this.calendarRepository = calendarRepository;
-        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
@@ -31,7 +29,7 @@ public class CalendarServiceImpl implements CalendarService {
         mySchedule.setScheduleContent(schedule);
         mySchedule.setShared(share);
 
-        User lover = userService.findByNickName(loverName);
+        User lover = userServiceImpl.findByNickName(loverName);
         mySchedule.setLover(lover);
 
         return calendarRepository.save(mySchedule);
@@ -57,17 +55,12 @@ public class CalendarServiceImpl implements CalendarService {
             return false;
         }
 
-        boolean isWriter = calendarDTO.getWriterId().equals(nickName);
-        boolean isSharedLover = shared && calendarDTO.getLover() != null && calendarDTO.getLover().getNickName().equals(nickName);
-
-        if (!isWriter && !isSharedLover) {
+        if (!calendarDTO.getWriterId().equals(nickName) && !(shared && calendarDTO.getLover() != null && calendarDTO.getLover().getNickName().equals(nickName))) {
             return false;
         }
-
         calendarRepository.deleteById(scheduleId);
         return true;
     }
-
 
 
     @Override
@@ -86,7 +79,7 @@ public class CalendarServiceImpl implements CalendarService {
         calendarDTO.setScheduleDate(date);
         calendarDTO.setScheduleContent(schedule);
         calendarDTO.setShared(shared);
-        User lover = userService.findByNickName(loverName);
+        User lover = userServiceImpl.findByNickName(loverName);
         calendarDTO.setLover(lover);
         return calendarRepository.save(calendarDTO);
     }
