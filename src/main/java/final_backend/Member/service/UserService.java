@@ -1,6 +1,7 @@
 package final_backend.Member.service;
 
 import final_backend.Member.model.User;
+import final_backend.Member.model.UserCredentialResponse;
 
 import java.util.List;
 
@@ -23,6 +24,6 @@ public interface UserService {
 
     String refresh(String email, String nickName, String s);
 
-    User validateUser(String email, String password);
+    UserCredentialResponse validateUser(String email, String password);
 //    String login(String nickName, String email, String password);
 }

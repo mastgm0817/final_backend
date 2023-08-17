@@ -59,7 +59,7 @@ public class UserController {
         String email = userCredentialRequest.getEmail();
         String password = userCredentialRequest.getPassword();
 
-        User user = userService.validateUser(email, password);
+        UserCredentialResponse user = userService.validateUser(email, password);
 
         if (user != null) {
             return ResponseEntity.ok(user); // 사용자 정보를 JSON 형태로 반환

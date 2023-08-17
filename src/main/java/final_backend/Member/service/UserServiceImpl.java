@@ -1,6 +1,7 @@
 package final_backend.Member.service;
 
 import final_backend.Member.model.User;
+import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,10 +65,12 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public User validateUser(String email, String password) {
+    public UserCredentialResponse validateUser(String email, String password) {
         User user = userRepository.findByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
-            return user; // 사용자 정보를 반환
+            UserCredentialResponse returnUser = user.toUser();
+            System.out.println(returnUser);
+            return returnUser; // 사용자 정보를 반환
         }
         return null; // 인증 실패 시 null 반환
     }

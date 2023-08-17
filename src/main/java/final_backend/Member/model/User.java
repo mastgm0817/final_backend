@@ -33,5 +33,13 @@ public class User {
     private UserRole userRole = UserRole.Normal;
     private String lover;
 
+    public UserCredentialResponse toUser() {
+        return UserCredentialResponse.builder()
+                .uid(uid)
+                .email(email)
+                .nickName(nickName)
+                .build();
+    }
+
 
 }
