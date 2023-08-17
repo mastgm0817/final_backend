@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("https://luvoost.co.kr")
+@CrossOrigin()
 @RequestMapping("/api/v1/coupon")
 public class CouponController {
 
