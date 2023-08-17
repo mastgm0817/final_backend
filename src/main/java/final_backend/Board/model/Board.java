@@ -19,8 +19,8 @@ public class Board {
     private String uid;
     private String nickName;
 
-    private String b_title;
-    private String b_content;
+    private String bTitle;
+    private String bContent;
     private LocalDateTime b_createdAt;
     private LocalDateTime b_updatedAt;
     private Long b_views;
