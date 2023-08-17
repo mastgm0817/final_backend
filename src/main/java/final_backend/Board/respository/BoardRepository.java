@@ -20,4 +20,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Boolean existsByBidLessThan(Long bid);
 
+    List<Board> findBybTitleContainingAndBidLessThanOrderByBidDesc(String findStr, Long cursorId, Pageable page);
+
+    List<Board> findBybContentContainingAndBidLessThanOrderByBidDesc(String findStr, Long cursorId, Pageable page);
+
+    List<Board> findByNickNameContainingAndBidLessThanOrderByBidDesc(String findStr, Long cursorId, Pageable page);
+
+    Board findTopByOrderByBidDesc();
 }

@@ -1,21 +1,14 @@
 package final_backend.Comments.Controller;
 
-import final_backend.Board.model.Board;
-import final_backend.Board.service.BoardService;
+import final_backend.Board.service.BoardServiceImpl;
 import final_backend.Comments.Service.CommentService;
 import final_backend.Comments.model.Comment;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,7 +18,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
     @Autowired
-    private BoardService boardService;
+    private BoardServiceImpl boardServiceImpl;
 
     @GetMapping
     public ResponseEntity<List<Comment>> getCommentsByBoardId(@PathVariable("bid") Long boardId, Model model) {
