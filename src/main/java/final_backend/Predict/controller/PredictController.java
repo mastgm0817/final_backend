@@ -9,7 +9,9 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("/api/v1")
 public class PredictController {
-    private String flaskServerUrl = "http://180.150.207.73:32000/api/v1/predict";
+
+    @Value("${flask.secret}")
+    private String flaskServerUrl;
     @PostMapping("/predict")
     public String predict(@RequestBody PredictDTO predictDTO) {
 
