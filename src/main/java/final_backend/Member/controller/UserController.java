@@ -8,8 +8,10 @@ import final_backend.Utils.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -83,6 +85,16 @@ public class UserController {
             // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new TokenResponse("회원이 아닌 유저입니다."));
+        }
+    }
+
+    @GetMapping("/users/info/{nickName}")
+    public ResponseEntity<User> getUserInfo(@PathVariable("nickName") String nickName) throws UnsupportedEncodingException {
+        User user = userService.findByNickName(nickName);
+        if ( user != null ){
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
