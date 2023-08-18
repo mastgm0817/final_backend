@@ -52,14 +52,15 @@ dependencies {
 processResources {
 	filesMatching('**/application.properties') {
 		expand([
-				DATABASE_HOST    : project.findProperty('DATABASE_HOST') ?: System.getenv('DATABASE_HOST'),
-				DATABASE_NAME    : project.findProperty('DATABASE_NAME') ?: System.getenv('DATABASE_NAME'),
-				DATABASE_USERNAME: project.findProperty('DATABASE_USERNAME') ?: System.getenv('DATABASE_USERNAME'),
-				DATABASE_PASSWORD: project.findProperty('DATABASE_PASSWORD') ?: System.getenv('DATABASE_PASSWORD'),
-				FLASK_URL: project.findProperty('FLASK_URL') ?: System.getenv('FLASK_URL')
+				DATABASE_HOST     : project.findProperty('DATABASE_HOST') ?: System.getenv('DATABASE_HOST'),
+				DATABASE_NAME     : project.findProperty('DATABASE_NAME') ?: System.getenv('DATABASE_NAME'),
+				DATABASE_USERNAME : project.findProperty('DATABASE_USERNAME') ?: System.getenv('DATABASE_USERNAME'),
+				DATABASE_PASSWORD : project.findProperty('DATABASE_PASSWORD') ?: System.getenv('DATABASE_PASSWORD'),
+				FLASK_URL         : project.findProperty('FLASK_URL') ?: System.getenv('FLASK_URL')
 		])
 	}
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()
