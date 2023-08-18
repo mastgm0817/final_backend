@@ -2,15 +2,13 @@ package final_backend.Comments.Service;
 
 import final_backend.Board.model.Board;
 import final_backend.Board.respository.BoardRepository;
-import final_backend.Board.service.BoardService;
+import final_backend.Board.service.BoardServiceImpl;
 import final_backend.Comments.Repository.CommentRepository;
 import final_backend.Comments.model.Comment;
-import org.hibernate.WrongClassException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +20,7 @@ public class CommentService {
     @Autowired
     private BoardRepository boardRepository;
     @Autowired
-    private BoardService boardService;
+    private BoardServiceImpl boardServiceImpl;
 
     public List<Comment> getCommentsByBoardId(Long boardId) {
         List<Comment> comments = commentRepository.findByBoardDTOBid(boardId);
