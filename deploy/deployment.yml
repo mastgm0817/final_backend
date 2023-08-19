@@ -12,6 +12,8 @@ spec:
       labels:
         app: backend
     spec:
+      nodeSelector: # nodeSelector 추가
+        kubernetes.io/hostname: worker2   # 원하는 노드 이름 지정
       containers:
         - name: backend-pod
           image: 119.197.27.55:5000/backend@sha256:2a2551f55f48a7887efc8fc0fba54a60e1ed3a2eef88ec4601dde1d076197ffc
