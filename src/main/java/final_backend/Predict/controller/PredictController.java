@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1")
 public class PredictController {
 
