@@ -1,6 +1,7 @@
 package final_backend.Predict.controller;
 
 import final_backend.Predict.model.PredictDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -9,10 +10,12 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/api/v1")
 public class PredictController {
 
+    @Value("${flask.secret}")
+    private String flaskServerUrl;
     @PostMapping("/predict")
     public String predict(@RequestBody PredictDTO predictDTO) {
+
         // Flask 서버의 URL 설정
-        String flaskServerUrl = "http://127.0.0.1:5000/api/v1/predict"; // 실제 Flask 서버의 URL로 변경해주세요
         System.out.println(predictDTO.getFood());
         System.out.println(predictDTO.getAmbiance());
 
