@@ -149,6 +149,16 @@ public class UserController {
         }
     }
 
+    @PatchMapping("/users/updateProfileImage")
+    public ResponseEntity<String> updateProfileImage(@RequestBody User request) {
+        try {
+            userService.updateProfileImage(request);
+            return ResponseEntity.ok("Profile image updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 
 }
