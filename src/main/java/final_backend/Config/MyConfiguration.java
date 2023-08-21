@@ -15,11 +15,13 @@
 //            @Override
 //            public void addCorsMappings(CorsRegistry registry) {
 //                registry.addMapping("/**")
-//                        .allowedOrigins("http://localhost:3000")
-//                        .allowedOrigins("https://luvoost.co.kr")
-//                        .allowedOrigins("http://luvoost.co.kr")
-//                        .allowedOrigins("https://180.150.207.73:31000")
-//                        .allowedOrigins("http://180.150.207.73:31000")
+//                        .allowedOrigins(
+//                                "http://localhost:3000",
+//                                "https://luvoost.co.kr",
+//                                "http://luvoost.co.kr",
+//                                "https://180.150.207.73:31000",
+//                                "http://180.150.207.73:31000"
+//                        )
 //                        .allowedMethods("GET", "POST", "PUT", "DELETE");
 //            }
 //        };

@@ -29,7 +29,8 @@ public class AuthenticationConfig {
         return httpSecurity
                 .httpBasic().disable()
                 .csrf().disable()
-                .cors().and()
+                .cors()
+                .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/users/login","/api/v1/users/join").permitAll()
                 .antMatchers(HttpMethod.POST,"/**").authenticated()
@@ -45,4 +46,5 @@ public class AuthenticationConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
 }

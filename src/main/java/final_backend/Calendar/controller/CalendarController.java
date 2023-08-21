@@ -44,9 +44,11 @@ public class CalendarController {
         }
     }
 
+    // 개인, 공유 일정 기능 결합
     @GetMapping("/{nickName}")
     public ResponseEntity<List<CalendarDTO>> getAllScheduleByName(@PathVariable("nickName") String nickName) {
         User user = userService.findByNickName(nickName);
+
         if (user != null) {
             String loverName = user.getLover();
             List<CalendarDTO> schedules = calendarService.getScheduleByNickName(nickName);
@@ -56,12 +58,12 @@ public class CalendarController {
             allSchedules.addAll(schedules);
             allSchedules.addAll(sharedSchedules);
 
-            System.out.println(schedules);
             return ResponseEntity.ok(allSchedules);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
 
     @PutMapping("/{nickName}/{scheduleId}")
     public ResponseEntity<String> updateSchedule(@PathVariable("nickName") String nickName,

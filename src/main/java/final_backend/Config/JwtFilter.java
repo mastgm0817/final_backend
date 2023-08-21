@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
        final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
        log.info("authorization :{}", authorization);
 
-       // 토큰이 없으면, 블럭
+       // 토큰이 없으ㅁ면, 블럭
        if(authorization == null || !authorization.startsWith("Bearer ")){
            log.error("authorization을 잘못보냈습니다.");
            filterChain.doFilter(request, response);
