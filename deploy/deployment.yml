@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend-pod
-          image: 119.197.27.55:5000/backend@sha256:1bffe22bf20accf5e9ddf6329dacda2a4b116bcf5524d954dfaba5bd5f4940fa
+          image: 119.197.27.55:5000/backend@sha256:91a963d97d9969bc9fb59a826d4f817aeaba4cb71a1f134c228a5ed5a768beeb
           ports:
             - containerPort: 8082
 ---

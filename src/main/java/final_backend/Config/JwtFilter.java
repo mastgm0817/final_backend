@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final String secretKey;
 
+    private Long expiredMs = 1000 * 60 * 60l;
 
     // 권한 부여
     @Override
@@ -45,18 +46,24 @@ public class JwtFilter extends OncePerRequestFilter {
        // 토큰 꺼내기
         String token = authorization.split(" ")[1];
 
-        // Token Expired 여부
+//         Token Expired 여부
         if(JwtUtil.isExpired(token, secretKey)){
             log.error("Token이 만료되었습니다.");
             filterChain.doFilter(request,response);
             return;
         }
 
+
+
+
         // nickName Token에서 꺼내기
         String nickName = JwtUtil.getNickName(token, secretKey);
+        String email = JwtUtil.getEmail(token, secretKey);
         log.info("nickName:{}",nickName);
+        log.info("email:{}",email);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(nickName, null, List.of(new SimpleGrantedAuthority("Normal")));
+        UsernamePasswordAuthenticationToken authenticationToken1 = new UsernamePasswordAuthenticationToken(nickName, null, List.of(new SimpleGrantedAuthority("Normal")));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, null, List.of(new SimpleGrantedAuthority("Normal")));
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);

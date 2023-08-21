@@ -26,13 +26,20 @@ public class User {
     private String email;
     private String password;
     private String profileImage;
-
     private String providerName;
 
     @Enumerated(EnumType.STRING)
     @Default
     private UserRole userRole = UserRole.Normal;
     private String lover;
+
+    public UserCredentialResponse toUser() {
+        return UserCredentialResponse.builder()
+                .uid(uid)
+                .email(email)
+                .nickName(nickName)
+                .build();
+    }
 
 
 }
