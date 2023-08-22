@@ -41,5 +41,9 @@ public class User {
                 .build();
     }
 
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImage = profileImageUrl;
+    }
+
 
 }

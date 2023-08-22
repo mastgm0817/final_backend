@@ -1,16 +1,22 @@
 package final_backend.Member.controller;
 
+import final_backend.Member.exception.ApiResponse;
 import final_backend.Member.model.*;
+import final_backend.Member.service.S3Service;
 import final_backend.Member.service.UserService;
 import final_backend.Utils.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -139,6 +145,7 @@ public class UserController {
         }
     }
 
+    // 내 정보 받아오기
     @GetMapping("/users/info/{nickName}")
     public ResponseEntity<User> getUserInfo(@PathVariable("nickName") String nickName) throws UnsupportedEncodingException {
         User user = userService.findByNickName(nickName);
@@ -149,16 +156,66 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/users/updateProfileImage")
-    public ResponseEntity<String> updateProfileImage(@RequestBody User request) {
-        try {
-            userService.updateProfileImage(request);
-            return ResponseEntity.ok("Profile image updated successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    // 내 정보 중복확인 후 수정
+    @PatchMapping("/users/info/update/{nickName}")
+    public ResponseEntity<Object> updateNickName(@PathVariable String nickName,
+                                                 @RequestBody Map<String, String> request,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        String newNickname = request.get("newNickname");
+        User currentUser = userService.findByNickName(nickName);
+
+        // 중복 닉네임 경우 예외 처리
+        if ( userService.isNicknameTaken(newNickname)) {
+            return ResponseEntity.badRequest().body(new ApiResponse("Nickname already taken: " + newNickname));
+        }
+
+        // 중복되지 않은 경우 닉네임 업데이트
+        User updateUser = userService.updateNickName(nickName, newNickname);
+        return ResponseEntity.ok(new ApiResponse("Nickname updated successfully: " + newNickname));
+    }
+
+    // 연인 정보 검색 후 불러오기
+    @GetMapping("/users/info/search/{inputnickName}")
+    public ResponseEntity<User> getUserInfoByNickName(@PathVariable String inputnickName) {
+        User user = userService.findByNickName(inputnickName); // 닉네임으로 유저 정보 검색
+
+        if (user != null) {
+            return ResponseEntity.ok(user); // 검색된 유저 정보 반환
+        } else {
+            return ResponseEntity.notFound().build(); // 유저 정보가 없으면 404 반환
         }
     }
 
+    // s3 연결
+    private final S3Service s3Service;
 
+    @Autowired
+    public UserController(S3Service s3Service) {
+        this.s3Service = s3Service;
+    }
 
+    @PostMapping("users/info/updateProfileImage/{nickName}")
+    public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file,
+                                                     @PathVariable("nickName") String nickName) {
+        try {
+            // 엽로드 된 파일 url 가져온다.
+            String newFileUrl = s3Service.uploadFileToS3(file);
+
+            // 기존 파일의 url 가져온다.
+            User user = userService.findByNickName(nickName);
+            String oldFileUrl = user.getProfileImage();
+
+            // 기존 파일 삭제 ( 프로필 이미지 없을 경우 무시 )
+            if (oldFileUrl != null) {
+                s3Service.deleteFileFromS3(oldFileUrl);
+            }
+
+            // 사용자 정보 업데이트 ( 새 프로필 이미지 전달해 업데이트 )
+            userService.updateUserInfo(nickName, newFileUrl);
+
+            return ResponseEntity.ok(newFileUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

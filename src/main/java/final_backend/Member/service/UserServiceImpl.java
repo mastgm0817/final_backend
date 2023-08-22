@@ -9,6 +9,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -101,20 +102,29 @@ public class UserServiceImpl implements UserService {
 
     // 프로필 이미지 수정 로직
     @Override
-    public void updateProfileImage(User request) {
-        User user = userRepository.findByNickName(request.getNickName());
+    public void updateUserInfo(String nickName, String profileImageUrl) {
+        User user = userRepository.findByNickName(nickName);
         if (user != null) {
-            user.setProfileImage(request.getProfileImage());
-
-            // Adding current time to the profileImage field
-            LocalDateTime currentTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedTime = currentTime.format(formatter);
-
-            String newProfileImage = request.getProfileImage() + " (" + formattedTime + ")";
-            user.setProfileImage(newProfileImage);
-
+            user.setProfileImageUrl(profileImageUrl);
             userRepository.save(user);
         }
+    }
+
+    @Override
+    public boolean isNicknameTaken(String nickName) {
+        return userRepository.existsByNickName(nickName);
+    }
+
+    @Override
+    public User updateNickName(String nickName, String newNickname) {
+        User user = userRepository.findByNickName(nickName);
+
+        // 중복된 닉네임인 경우 에외처리
+        if ( userRepository.existsByNickName(newNickname)) {
+            throw new IllegalArgumentException("Nickname already taken: " + newNickname);
+        }
+
+        user.setNickName(newNickname);
+        return userRepository.save(user);
     }
 }
