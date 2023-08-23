@@ -95,4 +95,32 @@ public class UserServiceImpl implements UserService {
 //        return JwtUtil.createJwt(nickName, email, secretKey, expiredMs);
         return JwtUtil.createRefreshJwt(email, nickName, secretKey, expiredMs);
     }
+
+    // 프로필 이미지 수정 로직
+    @Override
+    public void updateUserInfo(String nickName, String profileImageUrl) {
+        User user = userRepository.findByNickName(nickName);
+        if (user != null) {
+            user.setProfileImageUrl(profileImageUrl);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public boolean isNicknameTaken(String nickName) {
+        return userRepository.existsByNickName(nickName);
+    }
+
+    @Override
+    public User updateNickName(String nickName, String newNickname) {
+        User user = userRepository.findByNickName(nickName);
+
+        // 중복된 닉네임인 경우 에외처리
+        if ( userRepository.existsByNickName(newNickname)) {
+            throw new IllegalArgumentException("Nickname already taken: " + newNickname);
+        }
+
+        user.setNickName(newNickname);
+        return userRepository.save(user);
+    }
 }
