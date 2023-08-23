@@ -32,7 +32,7 @@ public class AuthenticationConfig {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/users/login","/api/v1/users/join", "/api/v1/normal/users/login","/api/v1/normal/users/join", "/api/v1/normal/users/authorize").permitAll()
+                .antMatchers("/api/v1/users/login","/api/v1/users/join", "/api/v1/normal/users/login","/api/v1/normal/users/join", "/api/v1/normal/users/authorize","/api/v2/predict").permitAll()
                 .antMatchers(HttpMethod.POST,"/**").authenticated()
                 .and()
                 .sessionManagement()
