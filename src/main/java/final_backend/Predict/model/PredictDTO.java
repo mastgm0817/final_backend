@@ -16,5 +16,6 @@ public class PredictDTO {
     private int taste;
     private int kindness;
     private String selected_region;
+    private int budget;
 
 }
