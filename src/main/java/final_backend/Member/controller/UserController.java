@@ -1,5 +1,4 @@
 package final_backend.Member.controller;
-
 import final_backend.Member.exception.ApiResponse;
 import final_backend.Member.model.*;
 import final_backend.Member.service.S3Service;
@@ -12,7 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
