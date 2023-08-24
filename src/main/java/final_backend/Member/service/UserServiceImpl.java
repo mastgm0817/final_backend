@@ -45,6 +45,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean validateByEmail(String email) {
+
+        return userRepository.findByEmail(email) != null;
+    }
+
+    @Override
     public boolean deleteUser(Long userId) {
         User user = userRepository.findByUid(userId);
         if (user != null) {
