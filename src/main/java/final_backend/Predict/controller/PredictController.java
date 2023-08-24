@@ -15,7 +15,7 @@ public class PredictController {
 //    @Value("${flask.secret}")
 //    private String flaskServerUrl;
 //    private String flaskServerUrl1 = "https://luvoost.co.kr:32000/api/v2/predict";
-    private String flaskServerUrl1 = "http://localhost:32000/api/v2/predict";
+    private String flaskServerUrl = "http://localhost:32000/api/v2/predict";
 
     @PostMapping("/predict")
     public String predict(@RequestBody PredictDTO predictDTO) {
@@ -24,12 +24,14 @@ public class PredictController {
         System.out.println(predictDTO.getAmbiance());
 
         // Flask 서버의 예측 엔드포인트 URL
-        String predictEndpoint = flaskServerUrl + "/api/v1/predict";
+        String predictEndpoint = flaskServerUrl;
 
         // Flask 서버로 데이터 전송
         RestTemplate restTemplate = new RestTemplate();
         System.out.println("Spring Connected And Try Flask Connection");
+
         ResponseEntity<String> response = restTemplate.postForEntity(predictEndpoint, predictDTO, String.class);
+
 
         System.out.println("wow");
         String predictionResult = response.getBody();
