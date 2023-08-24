@@ -24,7 +24,7 @@ public class PredictController {
         System.out.println(predictDTO.getAmbiance());
 
         // Flask 서버의 예측 엔드포인트 URL
-        String predictEndpoint = flaskServerUrl + "/api/v1/predict";
+        String predictEndpoint = flaskServerUrl;
 
         // Flask 서버로 데이터 전송
         RestTemplate restTemplate = new RestTemplate();
