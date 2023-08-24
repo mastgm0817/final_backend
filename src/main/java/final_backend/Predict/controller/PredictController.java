@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1")
 public class PredictController {
 
@@ -25,6 +26,7 @@ public class PredictController {
         RestTemplate restTemplate = new RestTemplate();
         System.out.println("Spring Connected And Try Flask Connection");
         ResponseEntity<String> response = restTemplate.postForEntity(predictEndpoint, predictDTO, String.class);
+
         System.out.println("wow");
         String predictionResult = response.getBody();
         // 예측 결과를 JSON 형식으로 생성하여 반환합니다.
