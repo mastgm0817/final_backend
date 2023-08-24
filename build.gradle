@@ -30,6 +30,8 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3:3.12.0'  // 쿠폰 랜덤 번호 생성
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.91' // Amazon S3 SDK
 
+	// Google Analytics
+	implementation 'com.google.apis:google-api-services-analyticsreporting:v4-rev20211020-1.32.1'
 
 	// social login
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
