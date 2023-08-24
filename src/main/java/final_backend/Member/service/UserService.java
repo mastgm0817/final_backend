@@ -27,5 +27,9 @@ public interface UserService {
     UserCredentialResponse validateUser(String email, String password);
 //    String login(String nickName, String email, String password);
 
-    void updateProfileImage(User request);
+    void updateUserInfo(String nickName, String profileImageUrl);
+
+    boolean isNicknameTaken(String newNickname);
+
+    User updateNickName(String nickName, String newNickname);
 }
