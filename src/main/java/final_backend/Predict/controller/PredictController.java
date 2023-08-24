@@ -29,7 +29,9 @@ public class PredictController {
         // Flask 서버로 데이터 전송
         RestTemplate restTemplate = new RestTemplate();
         System.out.println("Spring Connected And Try Flask Connection");
+
         ResponseEntity<String> response = restTemplate.postForEntity(predictEndpoint, predictDTO, String.class);
+
 
         System.out.println("wow");
         String predictionResult = response.getBody();
