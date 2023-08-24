@@ -38,6 +38,7 @@ public class User {
                 .uid(uid)
                 .email(email)
                 .nickName(nickName)
+                .profileImage(profileImage)
                 .build();
     }
 

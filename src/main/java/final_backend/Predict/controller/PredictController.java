@@ -7,12 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/v1")
 public class PredictController {
 
-    @Value("${flask.secret}")
-    private String flaskServerUrl;
+
+//    @Value("${flask.secret}")
+//    private String flaskServerUrl;
+//    private String flaskServerUrl1 = "https://luvoost.co.kr:32000/api/v2/predict";
+    private String flaskServerUrl1 = "http://localhost:32000/api/v2/predict";
+
     @PostMapping("/predict")
     public String predict(@RequestBody PredictDTO predictDTO) {
 

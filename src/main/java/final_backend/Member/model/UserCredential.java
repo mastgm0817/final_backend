@@ -13,6 +13,7 @@ public class UserCredential {
         return User.builder()
                 .nickName(nickName)
                 .providerName((providerName))
+                .profileImage("/image/basicprofile.png")
                 .email(email)
                 .password(password) // 암호화 적용
                 .userRole(UserRole.Normal) // 기본 역할 설정
