@@ -16,7 +16,9 @@ public class RandomController {
 
 //    @Value("${flask.secret}")
 //    private String flaskServerUrl;
+
     private String flaskServerUrl = "https://luvoost.co.kr:32000/api/v2/random";
+//    private String flaskServerUrl = "https://localhost:32000/api/v2/random";
     @PostMapping("/random")
     public String predict(@RequestBody RandomDTO randomDTO) {
         // Flask 서버의 예측 엔드포인트 URL
