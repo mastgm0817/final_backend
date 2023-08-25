@@ -32,4 +32,6 @@ public interface UserService {
     boolean isNicknameTaken(String newNickname);
 
     User updateNickName(String nickName, String newNickname);
+
+    User updateLoverInfo(User user);
 }
