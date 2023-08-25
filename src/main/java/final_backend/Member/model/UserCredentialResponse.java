@@ -11,6 +11,7 @@ public class UserCredentialResponse {
     private Long uid;
     private String nickName;
     private String email;
+    private String profileImage;
 
 
 }
