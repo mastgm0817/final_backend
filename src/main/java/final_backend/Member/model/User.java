@@ -27,6 +27,7 @@ public class User {
     private String password;
     private String profileImage;
     private String providerName;
+    private boolean block;
 
     @Enumerated(EnumType.STRING)
     @Default

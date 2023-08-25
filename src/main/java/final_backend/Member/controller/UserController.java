@@ -181,4 +181,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @PostMapping("users/block/{nickName}")
+    public ResponseEntity<String> blockUser(@PathVariable("nickName") String nickName) {
+        userService.setBlock(nickName);
+
+        return ResponseEntity.ok("유저 밴이 완료 되었습니다");
+    }
 }

@@ -5,12 +5,9 @@ import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Id;
 import java.util.List;
 
 @Service
@@ -136,5 +133,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateLoverInfo(User user) {
         return userRepository.save(user);
+    }
+    @Override
+    public User setBlock(String nickName){
+        User user = userRepository.findByNickName(nickName);
+        user.setBlock(true);
+        return user;
     }
 }

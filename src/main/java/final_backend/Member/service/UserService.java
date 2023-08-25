@@ -36,4 +36,6 @@ public interface UserService {
     User updateNickName(String nickName, String newNickname);
 
     User updateLoverInfo(User user);
+
+    User setBlock(String nickName);
 }

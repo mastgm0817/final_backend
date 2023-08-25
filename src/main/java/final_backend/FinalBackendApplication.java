@@ -49,7 +49,7 @@ public class FinalBackendApplication {
 	private static final String APPLICATION_NAME = "Hello Analytics Reporting";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 	private static final String KEY_FILE_LOCATION = "src/main/java/final_backend/Config/luvoostgatest-05d711662132.json";
-	private static final String VIEW_ID = "6009303599";
+	private static final String VIEW_ID = "403087661";
 
 	/**
 	 * Initializes an Analytics Reporting API V4 service object.
