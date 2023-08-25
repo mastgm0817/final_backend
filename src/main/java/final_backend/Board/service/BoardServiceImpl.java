@@ -28,8 +28,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<Board> getAllBoards() {
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "bid"));
+    public Long getAllBoards() {
+        return boardRepository.count();
     }
 
     @Override
