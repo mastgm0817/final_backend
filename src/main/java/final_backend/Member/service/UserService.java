@@ -14,6 +14,8 @@ public interface UserService {
 
     User findByEmail(String email);
 
+    boolean validateByEmail(String email);
+
     boolean deleteUser(Long userId);
 
     User updateUser(Long userId, User updatedUser);
@@ -32,4 +34,6 @@ public interface UserService {
     boolean isNicknameTaken(String newNickname);
 
     User updateNickName(String nickName, String newNickname);
+
+    User updateLoverInfo(User user);
 }
