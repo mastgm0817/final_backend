@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardService {
-    List<Board> getAllBoards();
+    Long getAllBoards();
 
     Optional<Board> getBoardById(Long bid);
 
