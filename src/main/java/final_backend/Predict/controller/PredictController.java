@@ -15,7 +15,7 @@ public class PredictController {
 //    @Value("${flask.secret}")
 //    private String flaskServerUrl;
 //    private String flaskServerUrl1 = "https://luvoost.co.kr:32000/api/v2/predict";
-    private String flaskServerUrl = "https://luvoost.co.kr:32000/api/v2/predict";
+    private String flaskServerUrl = "http://localhost:5000/api/v1/predict";
 
     @PostMapping("/predict")
     public String predict(@RequestBody PredictDTO predictDTO) {
@@ -35,8 +35,6 @@ public class PredictController {
 
         System.out.println("wow");
         String predictionResult = response.getBody();
-        // 예측 결과를 JSON 형식으로 생성하여 반환합니다.
-//        String predictionResult = "{\"latitude\":" + latitude + ", \"longitude\":" + longitude + "}";
         return predictionResult;
     }
 }
