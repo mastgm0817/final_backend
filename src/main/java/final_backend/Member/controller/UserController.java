@@ -117,6 +117,44 @@ public class UserController {
             return ResponseEntity.notFound().build(); // 유저 정보가 없으면 404 반환
         }
     }
+    // 검색된 유저 등록
+    @PostMapping("/users/savelover/{nickName}")
+    public ResponseEntity<User> saveLoverInfo(@RequestBody LoverInfoRequest loverInfoRequest,
+                                              @PathVariable("nickName") String nickName) {
+        try {
+            // 현재 로그인 한 유저의 정보
+            User user = userService.findByNickName(nickName);
+
+            // 연인이 없는지 확인 후 유저의 연인 정보 업데이트
+            if (user != null && user.getLover() == null) {
+                user.setLover(loverInfoRequest.getLoverNickName());
+                userService.updateLoverInfo(user);
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    // 연인과 헤어지기..
+    @DeleteMapping("/users/deletelover/{nickName}")
+    public ResponseEntity<User> deleteLoverInfo(@PathVariable("nickName") String nickName){
+        try{
+            // 현재 로그인 한 유저의 정보
+            User user = userService.findByNickName(nickName);
+            if ( user != null && user.getLover() != null ) {
+                // 연인 정보 삭제
+                user.setLover(null);
+                userService.updateLoverInfo(user);
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
     // s3 연결
     private final S3Service s3Service;
     @Autowired
