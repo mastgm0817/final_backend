@@ -14,6 +14,8 @@ public interface UserService {
 
     User findByEmail(String email);
 
+    User findByUid(Long uid);
+
     boolean validateByEmail(String email);
 
     boolean deleteUser(Long userId);

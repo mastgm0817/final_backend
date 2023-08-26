@@ -1,16 +1,17 @@
 package final_backend.Member.service;
 
+import final_backend.Coupon.model.Coupon;
+import final_backend.Coupon.repository.CouponRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Id;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -28,8 +29,10 @@ public class UserServiceImpl implements UserService {
     //환경 변수 가져오기
 
     @Override
+    @Transactional
     public User createUser(User user) {
         return userRepository.save(user);
+
     }
 
     @Override
@@ -39,12 +42,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByNickName(String name) {
-        return userRepository.findByNickName(name);
+        User user = userRepository.findByNickName(name);
+        User userDTO = new User();
+        userDTO.setNickName(user.getNickName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setUserRole(user.getUserRole());
+        userDTO.setCouponList(user.getCouponList());
+
+        return userDTO;
     }
+
 
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User findByUid(Long uid) {
+        return userRepository.findByUid(uid);
     }
 
     @Override
@@ -92,7 +108,7 @@ public class UserServiceImpl implements UserService {
     }
     @Value("${jwt.secret}")
     private String secretKey;
-    private Long expiredMs = 1000 * 60 * 60l;
+    private Long expiredMs = 1000 * 60 * 24 * 60l;
     @Override
     public String login(String email, String nickName, String password){
 //        return JwtUtil.createJwt(nickName, email, secretKey, expiredMs);
@@ -137,4 +153,6 @@ public class UserServiceImpl implements UserService {
     public User updateLoverInfo(User user) {
         return userRepository.save(user);
     }
+
+
 }

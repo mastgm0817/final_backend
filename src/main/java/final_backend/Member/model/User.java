@@ -1,5 +1,7 @@
 package final_backend.Member.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import final_backend.Coupon.model.Coupon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -7,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -33,6 +37,11 @@ public class User {
     private UserRole userRole = UserRole.Normal;
     private String lover;
 
+    @JsonManagedReference
+    @Builder.Default
+    @OneToMany(mappedBy = "userDTO", cascade = CascadeType.ALL)
+    List<Coupon> couponList = new ArrayList<>();
+
     public UserCredentialResponse toUser() {
         return UserCredentialResponse.builder()
                 .uid(uid)
@@ -45,6 +54,5 @@ public class User {
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImage = profileImageUrl;
     }
-
 
 }
