@@ -21,9 +21,11 @@ public class BoardController {
     private BoardServiceImpl boardServiceImpl;
 
     @GetMapping
-    public ResponseEntity<List<Board>> getAllBoards() {
-        List<Board> boards = boardServiceImpl.getAllBoards();
-        return ResponseEntity.ok(boards);
+    public ResponseEntity<Long> getAllBoards() {
+        Long numOfBoard = boardServiceImpl.getAllBoards();
+        Long pageCount = (numOfBoard / 15) + 1;
+        System.out.println(pageCount+" page exist");
+        return ResponseEntity.ok(pageCount);
     }
 
     @GetMapping("/page/{page}")

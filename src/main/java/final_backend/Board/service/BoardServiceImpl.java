@@ -24,12 +24,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     public Long getDefaultCursorId() {
-        return boardRepository.findTopByOrderByBidDesc().getBid();
+        return boardRepository.findTopByOrderByBidDesc().getBid()+1;
     }
 
     @Override
-    public List<Board> getAllBoards() {
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "bid"));
+    public Long getAllBoards() {
+        return boardRepository.count();
     }
 
     @Override
@@ -70,6 +70,8 @@ public class BoardServiceImpl implements BoardService {
         } else if ("content".equals(findingMethod)) {
             boards = boardRepository.findBybContentContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
         } else if ("nickname".equals(findingMethod)) {
+            boards = boardRepository.findByNickNameContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
+        }else if ("mine".equals(findingMethod)) {
             boards = boardRepository.findByNickNameContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
         } else {
             boards = boardRepository.findByBidLessThanOrderByBidDesc(cursorId, page);
