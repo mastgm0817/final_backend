@@ -1,6 +1,7 @@
 package final_backend.Member.controller;
 
 
+import final_backend.Coupon.service.CouponService;
 import final_backend.Member.model.*;
 import final_backend.Member.service.UserService;
 import final_backend.Utils.NomalTokenResponse;
@@ -17,6 +18,9 @@ public class NormalUserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CouponService couponService;
 
 
     @PostMapping("/authorize")
@@ -41,6 +45,8 @@ public class NormalUserController {
         else{
             User newUser = userCredential.toUser(userCredential.getProviderName()); // 신규 유저 객체 생성
             userService.createUser(newUser);
+            Long couponId = couponService.createJoinCoupon();
+            couponService.assignCouponToUser(couponId, newUser.getUid());
             String token = userService.login(newUser.getNickName(), newUser.getEmail(), ""); // 토큰 생성
             String profileImage = newUser.getProfileImage();
             String nickName = newUser.getNickName();
