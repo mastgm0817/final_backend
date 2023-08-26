@@ -17,13 +17,17 @@ public class UserServiceImpl implements UserService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     //환경 변수 가져오기
 
+
+    @Override
+    public User findById(Long uid) {
+        return userRepository.findByUid(uid);
+    }
     @Override
     public User createUser(User user) {
         return userRepository.save(user);
@@ -134,10 +138,5 @@ public class UserServiceImpl implements UserService {
     public User updateLoverInfo(User user) {
         return userRepository.save(user);
     }
-    @Override
-    public User setBlock(String nickName){
-        User user = userRepository.findByNickName(nickName);
-        user.setBlock(true);
-        return user;
-    }
+
 }

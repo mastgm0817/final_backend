@@ -12,6 +12,6 @@ public class UserCredentialResponse {
     private String nickName;
     private String email;
     private String profileImage;
-
+    private String blocked;
 
 }

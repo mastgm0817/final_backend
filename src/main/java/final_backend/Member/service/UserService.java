@@ -37,5 +37,5 @@ public interface UserService {
 
     User updateLoverInfo(User user);
 
-    User setBlock(String nickName);
+    User findById(Long uid);
 }
