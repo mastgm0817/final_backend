@@ -26,6 +26,7 @@ public class CouponController {
     @PostMapping // 쿠폰 한개만들때
     public ResponseEntity<List<Coupon>> createCoupon(@RequestBody Coupon coupon, @RequestParam Integer countNum) {
         List<Coupon> newCoupons = new ArrayList<>();
+        System.out.println("값 잘 받아오는지 테스트" + coupon.getDiscountValue());
         for(int i = 0; i < countNum; i++) {
             Coupon newCoupon = couponService.createCoupon(coupon);
             newCoupons.add(newCoupon);

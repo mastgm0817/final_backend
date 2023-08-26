@@ -56,6 +56,8 @@ public class CouponServiceImpl implements CouponService {
         if (coupon.getDiscountType() != null) {
             newCoupon.setDiscountType(coupon.getDiscountType());
         }
+        System.out.println("Discount Value: " + coupon.getDiscountValue());
+
         newCoupon.setDiscountValue(coupon.getDiscountValue());
         newCoupon.setStatus(Status.DEFAULT);
         newCoupon.setCreatedAt(LocalDateTime.now());
