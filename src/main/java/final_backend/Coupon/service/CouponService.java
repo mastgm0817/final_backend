@@ -5,6 +5,7 @@ import final_backend.Member.exception.CouponAlreadyAssignedException;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface CouponService {
     String generateCouponCode();

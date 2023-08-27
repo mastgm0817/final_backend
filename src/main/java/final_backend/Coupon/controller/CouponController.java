@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -63,24 +60,26 @@ public class CouponController {
         return new ResponseEntity<>(coupons, HttpStatus.OK);
     }
 
+    // applyCoupon 메서드에서 응답 생성
     @PostMapping("/use")
     public ResponseEntity<Map<String, Object>> applyCoupon(@RequestBody String couponCode) {
         Map<String, Object> response = new HashMap<>();
         System.out.println("프론트에서 넘어온 값: " + couponCode);
 
-        // 쿠폰 검증 로직을 여기에 추가
-        Coupon coupon = couponService.checkCouponValidity(couponCode);
-
-        if (coupon != null) {
+        // 쿠폰 검증 로직
+        try {
+            Coupon coupon = couponService.checkCouponValidity(couponCode);
             response.put("status", "ok");
             response.put("discountType", coupon.getDiscountType());
             response.put("discountValue", coupon.getDiscountValue());
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
+        } catch (CouponAlreadyAssignedException e) {
             response.put("status", "error");
+            response.put("message", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+
 
 
     @PostMapping("/assign")

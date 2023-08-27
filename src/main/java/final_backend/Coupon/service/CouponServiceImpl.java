@@ -9,6 +9,7 @@ import final_backend.Member.model.User;
 import final_backend.Member.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -81,25 +82,44 @@ public class CouponServiceImpl implements CouponService {
     }
 
 
-    @Override
     public Coupon checkCouponValidity(String couponCode) {
         couponCode = couponCode.replace("\"", "");
-        // DB에서 쿠폰 코드를 찾아 유효한지 확인
-        System.out.println("서비스코드로 넘어온 쿠폰코드: " + couponCode);
         Optional<Coupon> optionalCoupon = couponRepository.findByCode(couponCode);
-        System.out.println("찾았니?" + optionalCoupon);
 
-        // 쿠폰이 없으면 null 반환
         if (!optionalCoupon.isPresent()) {
-            return null;
+            throw new CouponAlreadyAssignedException("쿠폰을 찾을 수 없습니다.");
         }
 
         Coupon coupon = optionalCoupon.get();
-        // 만료 날짜와 현재 시간을 비교하여 쿠폰의 유효성을 검사
+
+        if (coupon.getStatus() == Status.USING) {
+            throw new CouponAlreadyAssignedException("현재 적용중인 쿠폰입니다.");
+        }
+
+        if (coupon.getStatus() == Status.USED) {
+            throw new CouponAlreadyAssignedException("이미 사용한 쿠폰입니다.");
+        }
+
         if (coupon.getEndAt().isAfter(LocalDateTime.now())) {
+            // 쿠폰을 사용중 상태로 만듭니다.
+            coupon.setStatus(Status.USING);
+            coupon.setAssignedAt(LocalDateTime.now());  // 예약 시간을 설정
+            couponRepository.save(coupon);
             return coupon;
         } else {
-            return null;
+            throw new CouponAlreadyAssignedException("쿠폰이 만료되었습니다.");
+        }
+    }
+
+    @Scheduled(fixedRate = 60000 * 5)  // 5분마다 실행
+    public void releaseExpiredReservations() {
+        List<Coupon> reservedCoupons = couponRepository.findAllByStatus(Status.USING);
+
+        for (Coupon coupon : reservedCoupons) {
+            if (coupon.getAssignedAt().plusMinutes(10).isBefore(LocalDateTime.now())) {
+                coupon.setStatus(Status.DEFAULT);
+                couponRepository.save(coupon);
+            }
         }
     }
 

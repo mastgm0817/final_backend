@@ -4,5 +4,7 @@ public enum Status {
     DEFAULT,
     DELETED,
     USED,
-    EXPIRED
+    EXPIRED,
+    USING
+
 }
