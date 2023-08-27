@@ -1,5 +1,7 @@
 package final_backend.Calendar.service;
 
+import final_backend.Calendar.exception.DateNotSelectedException;
+import final_backend.Calendar.exception.ScheduleContentEmptyException;
 import final_backend.Calendar.model.CalendarDTO;
 import final_backend.Calendar.repository.CalendarRepository;
 import final_backend.Member.model.User;
@@ -23,6 +25,14 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public CalendarDTO CreateMySchedule(String userName, LocalDate date, String schedule, boolean share, String loverName) {
+        if (date == null) {
+            throw new DateNotSelectedException("날짜를 선택해 주세요.");
+        }
+
+        if (schedule == null || schedule.trim().isEmpty()) {
+            throw new ScheduleContentEmptyException("일정 내용을 입력해 주세요.");
+        }
+
         CalendarDTO mySchedule = new CalendarDTO();
         mySchedule.setWriterId(userName);
         mySchedule.setScheduleDate(date);
