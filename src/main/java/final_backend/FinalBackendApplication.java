@@ -34,7 +34,7 @@ import com.google.api.services.analyticsreporting.v4.model.ReportRow;
 import org.springframework.http.converter.json.GsonBuilderUtils;
 
 @SpringBootApplication
-public class FbinalBackendApplication {
+public class FinalBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FinalBackendApplication.class, args);
 	}

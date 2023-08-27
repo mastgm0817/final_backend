@@ -2,6 +2,7 @@ package final_backend.Member.service;
 
 import final_backend.Admin.model.UserBlackListDTO;
 import final_backend.Admin.repository.UserBlackListRepository;
+import final_backend.Coupon.repository.CouponRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.repository.UserRepository;
@@ -18,15 +19,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    private CouponRepository couponRepository;
+    private final CouponRepository couponRepository;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserBlackListRepository userBlackListRepository;
 
 
-    public UserServiceImpl(UserRepository userRepository, UserBlackListRepository userBlackListRepository) {
+    public UserServiceImpl(UserRepository userRepository, CouponRepository couponRepository, UserBlackListRepository userBlackListRepository) {
         this.userRepository = userRepository;
+        this.couponRepository = couponRepository;
         this.userBlackListRepository = userBlackListRepository;
     }
 
@@ -52,9 +53,9 @@ public class UserServiceImpl implements UserService {
         userDTO.setNickName(user.getNickName());
         userDTO.setEmail(user.getEmail());
         userDTO.setUserRole(user.getUserRole());
-        userDTO.setCouponList(user.getCouponList());
+//        userDTO.setCouponList(user.getCouponList());
         userDTO.setBlackListDetails(user.getBlackListDetails());
-
+        userDTO.setLover(user.getLover());
         return userDTO;
     }
 
