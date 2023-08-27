@@ -18,6 +18,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Autowired
+    private CouponRepository couponRepository;
+
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserBlackListRepository userBlackListRepository;
 
@@ -73,9 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean deleteUser(Long userId) {
         User user = userRepository.findByUid(userId);
         if (user != null) {
+            couponRepository.deleteByUserId(user.getUid());
             userRepository.delete(user);
             return true;
         }
