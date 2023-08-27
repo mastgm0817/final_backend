@@ -43,15 +43,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByNickName(String name) {
         User user = userRepository.findByNickName(name);
-        User userDTO = new User();
-        userDTO.setUid(user.getUid());
-        userDTO.setNickName(user.getNickName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setUserRole(user.getUserRole());
-        userDTO.setCouponList(user.getCouponList());
-        userDTO.setBlackListDetails(user.getBlackListDetails());
 
-        return userDTO;
+        if (user != null) {
+            User userDTO = new User();
+            userDTO.setUid(user.getUid());
+            userDTO.setNickName(user.getNickName());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setUserRole(user.getUserRole());
+            userDTO.setCouponList(user.getCouponList());
+            userDTO.setBlackListDetails(user.getBlackListDetails());
+            userDTO.setLover(user.getLover());
+
+            return userDTO;
+        } else {
+            return null; // 또는 예외 처리를 하거나 다른 처리 방법을 선택
+        }
     }
 
 
