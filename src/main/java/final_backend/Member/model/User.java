@@ -61,4 +61,20 @@ public class User {
         this.profileImage = profileImageUrl;
     }
 
+    // User 클래스의 toString 메서드에서 couponList와 blackListDetails를 출력하지 않도록 수정
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid=" + uid +
+                ", nickName='" + nickName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", profileImage='" + profileImage + '\'' +
+                ", providerName='" + providerName + '\'' +
+                ", userRole=" + userRole +
+                ", lover='" + lover + '\'' +
+                '}';
+    }
+
 }
