@@ -73,16 +73,15 @@ public class UserController {
         }
     }
     @PostMapping("/users/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody UserLoginRequest dto){
+    public ResponseEntity<TokenResponse> login(@RequestBody UserLoginRequest dto) {
         User existingUser = userService.findByEmail(dto.getEmail());
         System.out.println(dto.getEmail());
+
         if (existingUser != null) { // 사용자가 존재
             System.out.println("컨트롤러 지나감");
             String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
-//            String refreshToken = userService.refresh(dto.getEmail(), dto.getNickName(), "");
             return ResponseEntity.ok().body(new TokenResponse(accessToken));
-        }
-        else{
+        } else {
             // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new TokenResponse("회원이 아닌 유저입니다."));
