@@ -1,5 +1,6 @@
 package final_backend.Calendar.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import final_backend.Member.model.User;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class CalendarDTO {
     private String scheduleContent;
     private boolean shared;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "uid")
     private User lover;

@@ -23,7 +23,7 @@ public interface UserService {
 
     String findByProviderName(String providerName);
 
-    String login(String email, String nickName, String password);
+    String login(String email, String nickName, String password) throws IllegalAccessException;
 
     String refresh(String email, String nickName, String s);
 

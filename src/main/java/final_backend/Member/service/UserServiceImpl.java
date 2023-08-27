@@ -1,12 +1,11 @@
 package final_backend.Member.service;
 
-import final_backend.Coupon.model.Coupon;
-import final_backend.Coupon.repository.CouponRepository;
+import final_backend.Admin.model.UserBlackListDTO;
+import final_backend.Admin.repository.UserBlackListRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,10 +19,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final UserBlackListRepository userBlackListRepository;
 
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserBlackListRepository userBlackListRepository) {
         this.userRepository = userRepository;
+        this.userBlackListRepository = userBlackListRepository;
     }
 
     //환경 변수 가져오기
@@ -112,8 +113,13 @@ public class UserServiceImpl implements UserService {
     private String secretKey;
     private Long expiredMs = 1000 * 60 * 24 * 60l;
     @Override
-    public String login(String email, String nickName, String password){
+    public String login(String email, String nickName, String password) throws IllegalAccessException {
 //        return JwtUtil.createJwt(nickName, email, secretKey, expiredMs);
+        User user = userRepository.findByEmail(email);
+        UserBlackListDTO blacklistedUser = userBlackListRepository.findByBlockUser(user);
+        if (blacklistedUser != null) { // 해당 사용자가 블랙리스트에 있다면
+            throw new IllegalAccessException("Your account has been banned for the following reason: " + blacklistedUser.getReason());
+        }
         return JwtUtil.createJwt(email, nickName, secretKey, expiredMs);
     }
 
