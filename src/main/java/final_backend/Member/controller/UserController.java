@@ -1,4 +1,5 @@
 package final_backend.Member.controller;
+import final_backend.Coupon.service.CouponService;
 import final_backend.Member.exception.ApiResponse;
 import final_backend.Member.model.*;
 import final_backend.Member.service.S3Service;
@@ -21,6 +22,9 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CouponService couponService;
+
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
@@ -61,7 +65,9 @@ public class UserController {
         }
         else{
             User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName()); // 신규 유저 객체 생성
-            userService.createUser(newUser);
+            User createdUser = userService.createUser(newUser);
+            Long couponId = couponService.createJoinCoupon();
+            couponService.assignCouponToUser(couponId, createdUser.getUid());
             String token = userService.login(newUser.getNickName(), newUser.getEmail(), ""); // 토큰 생성
             return new ResponseEntity<>(new TokenResponse(token), HttpStatus.CREATED);
         }

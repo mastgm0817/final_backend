@@ -1,6 +1,7 @@
 package final_backend.Member.controller;
 
 
+import final_backend.Coupon.service.CouponService;
 import final_backend.Member.model.*;
 import final_backend.Member.service.UserService;
 import final_backend.Utils.NomalTokenResponse;
@@ -17,6 +18,9 @@ public class NormalUserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CouponService couponService;
 
 
     @PostMapping("/authorize")
@@ -36,14 +40,17 @@ public class NormalUserController {
         User existingUser = userService.findByEmail(userCredential.getEmail());
         // 이미 가입된 회원일 때
         if (existingUser != null) { // 사용자가 존재하는지 확인
-            return new ResponseEntity<>(new NomalTokenResponse("User with the provided email already exists.", "nothing"), HttpStatus.OK);
+            return new ResponseEntity<>(new NomalTokenResponse("User with the provided email already exists.", "nothing",""), HttpStatus.OK);
         }
         else{
             User newUser = userCredential.toUser(userCredential.getProviderName()); // 신규 유저 객체 생성
             userService.createUser(newUser);
+            Long couponId = couponService.createJoinCoupon();
+            couponService.assignCouponToUser(couponId, newUser.getUid());
             String token = userService.login(newUser.getNickName(), newUser.getEmail(), ""); // 토큰 생성
             String profileImage = newUser.getProfileImage();
-            return new ResponseEntity<>(new NomalTokenResponse(token,profileImage), HttpStatus.CREATED);
+            String nickName = newUser.getNickName();
+            return new ResponseEntity<>(new NomalTokenResponse(token,profileImage,nickName), HttpStatus.CREATED);
         }
     }
 
@@ -55,13 +62,14 @@ public class NormalUserController {
             System.out.println("컨트롤러 지나감");
             String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
             String profileImage = existingUser.getProfileImage();
+            String nickName = existingUser.getNickName();
 //            String refreshToken = userService.refresh(dto.getEmail(), dto.getNickName(), "");
-            return ResponseEntity.ok().body(new NomalTokenResponse(accessToken, profileImage ));
+            return ResponseEntity.ok().body(new NomalTokenResponse(accessToken, profileImage, nickName ));
         }
         else{
             // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new NomalTokenResponse("회원이 아닌 유저입니다.", "fail"));
+                    .body(new NomalTokenResponse("회원이 아닌 유저입니다.", "fail", ""));
         }
     }
 

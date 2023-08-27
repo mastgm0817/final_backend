@@ -14,8 +14,10 @@ public class PredictController {
 
 //    @Value("${flask.secret}")
 //    private String flaskServerUrl;
-//    private String flaskServerUrl1 = "https://luvoost.co.kr:32000/api/v2/predict";
-    private String flaskServerUrl = "http://localhost:5000/api/v1/predict";
+
+//    private String flaskServerUrl = "http://localhost:32000/api/v2/predict";
+    private String flaskServerUrl = "https://luvoost.co.kr:32000/api/v2/predict";
+
 
     @PostMapping("/predict")
     public String predict(@RequestBody PredictDTO predictDTO) {
