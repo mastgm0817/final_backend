@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CouponServiceImpl implements CouponService {
@@ -46,6 +47,7 @@ public class CouponServiceImpl implements CouponService {
         return newCoupon.getCpid();
     }
 
+
     @Override
     public Coupon createCoupon(Coupon coupon) {
         Coupon newCoupon = new Coupon();
@@ -69,15 +71,15 @@ public class CouponServiceImpl implements CouponService {
         return couponRepository.save(newCoupon);
     }
 
-    // 새로운 메서드 추가: 여러 개의 쿠폰을 생성하는 기능
-//    public List<Coupon> createCoupons(List<Coupon> coupons) {
-//        List<Coupon> createdCoupons = new ArrayList<>();
-//        for (Coupon coupon : coupons) {
-//            Coupon createdCoupon = createCoupon(coupon);
-//            createdCoupons.add(createdCoupon);
-//        }
-//        return createdCoupons;
-//    }
+    public void deleteCoupon(Long cpid) throws Exception {
+        Optional<Coupon> coupon = couponRepository.findById(cpid);
+        if (coupon.isPresent()) {
+            couponRepository.deleteById(cpid);
+        } else {
+            throw new Exception("Coupon not found");
+        }
+    }
+
 
 
     @Override

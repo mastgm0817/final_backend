@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin()
+@CrossOrigin
 @RequestMapping("/api/v1/coupon")
 public class CouponController {
 
@@ -34,23 +34,15 @@ public class CouponController {
         return new ResponseEntity<>(newCoupons, HttpStatus.CREATED);
     }
 
-//    @PostMapping
-//    public ResponseEntity<List<Coupon>> createCoupons(@RequestBody CouponRequest couponRequest) {
-//        List<Coupon> createdCoupons = new ArrayList<>();
-//        for (int i = 0; i < couponRequest.getNumOfCoupons(); i++) {
-//            createdCoupons.add(couponService.createCoupon(couponRequest.getCoupon()));
-//        }
-//        return new ResponseEntity<>(createdCoupons, HttpStatus.CREATED);
-//    }
-
-//    @PostMapping // 쿠폰 여러개 만들때
-//    public ResponseEntity<List<Coupon>> createCoupons(@RequestBody List<Coupon> coupons) {
-//        List<Coupon> newCoupons = new ArrayList<>();
-//        for (Coupon coupon : coupons) {
-//            newCoupons.add(couponService.createCoupon(coupon));
-//        }
-//        return new ResponseEntity<>(newCoupons, HttpStatus.CREATED);
-//    }
+    @PostMapping("/{cpid}")
+    public ResponseEntity<?> deleteCoupon(@PathVariable Long cpid) {
+        try {
+            couponService.deleteCoupon(cpid);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An error occurred while deleting the coupon");
+        }
+    }
 
 
     @GetMapping("/{cpid}")

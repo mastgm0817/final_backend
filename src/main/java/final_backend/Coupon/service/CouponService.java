@@ -16,5 +16,7 @@ public interface CouponService {
 
     List<Coupon> getAllCoupons();
 
+    void deleteCoupon(Long cpid) throws Exception;
+
     void assignCouponToUser(Long couponId, Long userId);
 }
