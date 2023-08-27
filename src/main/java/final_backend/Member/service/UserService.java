@@ -9,7 +9,6 @@ public interface UserService {
     User createUser(User user);
 
     List<User> getAllUsers();
-
     User findByNickName(String name);
 
     User findByEmail(String email);
@@ -38,4 +37,5 @@ public interface UserService {
     User updateNickName(String nickName, String newNickname);
 
     User updateLoverInfo(User user);
+
 }
