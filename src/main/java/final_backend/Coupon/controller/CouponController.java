@@ -2,6 +2,7 @@ package final_backend.Coupon.controller;
 import final_backend.Coupon.model.Coupon;
 import final_backend.Coupon.model.CouponRequest;
 import final_backend.Coupon.service.CouponService;
+import final_backend.Member.exception.CouponAlreadyAssignedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,5 +66,23 @@ public class CouponController {
     public ResponseEntity<List<Coupon>> getAllCoupons() {
         List<Coupon> coupons = couponService.getAllCoupons();
         return new ResponseEntity<>(coupons, HttpStatus.OK);
+    }
+
+    @PostMapping("/assign")
+    public ResponseEntity<?> assignCouponToUser(@RequestParam String couponId, @RequestParam String userId) {
+        Long cpid = Long.parseLong(couponId);
+        Long uid = Long.parseLong(userId);
+        try {
+            couponService.assignCouponToUser(cpid, uid);
+            return new ResponseEntity<>("Coupon assigned successfully", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @ExceptionHandler(CouponAlreadyAssignedException.class)
+    public ResponseEntity<String> handleCouponAlreadyAssignedException(CouponAlreadyAssignedException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

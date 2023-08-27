@@ -3,13 +3,12 @@ package final_backend.Admin.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class FormData {
+public class BlackListRequest {
     private String reason;
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDate; // 블랙된 시작일

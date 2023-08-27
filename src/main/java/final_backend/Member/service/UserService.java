@@ -9,10 +9,11 @@ public interface UserService {
     User createUser(User user);
 
     List<User> getAllUsers();
-
     User findByNickName(String name);
 
     User findByEmail(String email);
+
+    User findByUid(Long uid);
 
     boolean validateByEmail(String email);
 
@@ -37,5 +38,4 @@ public interface UserService {
 
     User updateLoverInfo(User user);
 
-    User findById(Long uid);
 }

@@ -1,8 +1,10 @@
 package final_backend.Admin.controller;
 
-import final_backend.Admin.model.FormData;
+import final_backend.Admin.model.BlackListRequest;
+import final_backend.Admin.model.UserBlackListDTO;
 import final_backend.Admin.service.AdminServiceImpl;
 import final_backend.Member.model.User;
+import final_backend.Member.repository.UserRepository;
 import final_backend.Member.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +28,8 @@ public class AdminController {
     }
 
     @GetMapping("/users/{nickName}")
-    public ResponseEntity<User> getUserInfoByNickName(@PathVariable String nickName) {
-        User user = userService.findByNickName(nickName); // 닉네임으로 유저 정보 검색
+    public ResponseEntity<List<User>> getUserInfoByNickName(@PathVariable String nickName) {
+        List<User> user = adminServiceImpl.findByNickName(nickName); // 닉네임으로 유저 정보 검색
         if (user != null) {
             return ResponseEntity.ok(user); // 검색된 유저 정보 반환
         } else {
@@ -35,14 +37,14 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/users/block/{nickName}")
-    public ResponseEntity<?> blockUser(@PathVariable String nickName, @RequestBody FormData formData) {
-        System.out.println(formData.getStartDate());
+    @PostMapping("/users/block/{uid}")
+    public ResponseEntity<UserBlackListDTO> blockUser(@PathVariable Long uid, @RequestBody BlackListRequest blackListRequest) {
+
         try {
-            adminServiceImpl.blockUserByNickName(nickName, formData.getReason(), formData.getStartDate(), formData.getEndDate());
-            return ResponseEntity.ok().build(); // 200 OK
+            UserBlackListDTO blockUser = adminServiceImpl.blockUserByUid(uid, blackListRequest.getReason(), blackListRequest.getStartDate(), blackListRequest.getEndDate());
+            return ResponseEntity.ok(blockUser); // 200 OK
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage()); // 400 Bad Request
+            return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
     }
 

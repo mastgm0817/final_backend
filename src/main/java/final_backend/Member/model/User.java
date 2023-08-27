@@ -1,6 +1,8 @@
 package final_backend.Member.model;
 
 import final_backend.Admin.model.UserBlackListDTO;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import final_backend.Coupon.model.Coupon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -8,10 +10,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
-@Table(name="user_table")
 @Builder
 //빌더를 설치하면 기본 생성자가 사라져서 JPA기능이 제대로 안할수있음
 //해결법은 Constructor를 아래와 같이 선언해주는것
@@ -29,12 +32,21 @@ public class User {
     private String password;
     private String profileImage;
     private String providerName;
-    private boolean blocked;
 
     @Enumerated(EnumType.STRING)
     @Default
     private UserRole userRole = UserRole.Normal;
     private String lover;
+
+    @JsonManagedReference
+    @Builder.Default
+    @OneToMany(mappedBy = "userDTO", cascade = CascadeType.ALL)
+    List<Coupon> couponList = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToOne(mappedBy = "blockUser", cascade = CascadeType.ALL)
+    private UserBlackListDTO blackListDetails;
+
 
     public UserCredentialResponse toUser() {
         return UserCredentialResponse.builder()
@@ -48,7 +60,5 @@ public class User {
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImage = profileImageUrl;
     }
-    @OneToOne(mappedBy = "blockUser", cascade = CascadeType.ALL)
-    private UserBlackListDTO blackListDetails;
 
 }
