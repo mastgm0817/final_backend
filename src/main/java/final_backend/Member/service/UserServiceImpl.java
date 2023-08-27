@@ -44,10 +44,12 @@ public class UserServiceImpl implements UserService {
     public User findByNickName(String name) {
         User user = userRepository.findByNickName(name);
         User userDTO = new User();
+        userDTO.setUid(user.getUid());
         userDTO.setNickName(user.getNickName());
         userDTO.setEmail(user.getEmail());
         userDTO.setUserRole(user.getUserRole());
         userDTO.setCouponList(user.getCouponList());
+        userDTO.setBlackListDetails(user.getBlackListDetails());
 
         return userDTO;
     }
