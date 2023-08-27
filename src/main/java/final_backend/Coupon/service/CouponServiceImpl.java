@@ -11,7 +11,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,6 +70,7 @@ public class CouponServiceImpl implements CouponService {
         return couponRepository.save(newCoupon);
     }
 
+    @Override
     public void deleteCoupon(Long cpid) throws Exception {
         Optional<Coupon> coupon = couponRepository.findById(cpid);
         if (coupon.isPresent()) {
@@ -81,17 +81,43 @@ public class CouponServiceImpl implements CouponService {
     }
 
 
+    @Override
+    public Coupon checkCouponValidity(String couponCode) {
+        couponCode = couponCode.replace("\"", "");
+        // DB에서 쿠폰 코드를 찾아 유효한지 확인
+        System.out.println("서비스코드로 넘어온 쿠폰코드: " + couponCode);
+        Optional<Coupon> optionalCoupon = couponRepository.findByCode(couponCode);
+        System.out.println("찾았니?" + optionalCoupon);
+
+        // 쿠폰이 없으면 null 반환
+        if (!optionalCoupon.isPresent()) {
+            return null;
+        }
+
+        Coupon coupon = optionalCoupon.get();
+        // 만료 날짜와 현재 시간을 비교하여 쿠폰의 유효성을 검사
+        if (coupon.getEndAt().isAfter(LocalDateTime.now())) {
+            return coupon;
+        } else {
+            return null;
+        }
+    }
+
+
+
 
     @Override
     public Coupon getCouponById(Long cpid) {
         return couponRepository.findById(cpid).orElse(null);
     }
 
+
     @Override
     public List<Coupon> getAllCoupons() {
         return couponRepository.findAll();
     }
 
+    @Override
     @Transactional
     public void assignCouponToUser(Long couponId, Long userId) throws CouponAlreadyAssignedException {
         // 유저와 쿠폰을 찾음
