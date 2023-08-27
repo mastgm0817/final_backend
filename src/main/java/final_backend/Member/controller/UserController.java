@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -35,14 +36,15 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-    @DeleteMapping("/users/{uid}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String uid) {
-        Long num = Long.valueOf(uid);
-        boolean deleted = userService.deleteUser(num);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @DeleteMapping("/users/delete/{nickname}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String nickname) {
+        User foundUser = userService.findByNickName(nickname);
+        Long num = foundUser.getUid();
+        try {
+            userService.deleteUser(num);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
     @PutMapping("/users/{uid}")
