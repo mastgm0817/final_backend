@@ -14,12 +14,15 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/api/v1")
 public class RandomController {
 
-    @Value("${flask.secret}")
-    private String flaskServerUrl;
+//    @Value("${flask.secret}")
+//    private String flaskServerUrl;
+
+    private String flaskServerUrl = "https://luvoost.co.kr:32000/api/v2/random";
+//    private String flaskServerUrl = "https://localhost:32000/api/v2/random";
     @PostMapping("/random")
     public String predict(@RequestBody RandomDTO randomDTO) {
         // Flask 서버의 예측 엔드포인트 URL
-        String predictEndpoint = flaskServerUrl + "/api/v1/random";
+        String predictEndpoint = flaskServerUrl;
         System.out.println(randomDTO.getSelected_region());
 
         // Flask 서버로 데이터 전송

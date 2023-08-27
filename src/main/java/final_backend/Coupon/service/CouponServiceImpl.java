@@ -1,24 +1,29 @@
 package final_backend.Coupon.service;
 
 import final_backend.Coupon.model.Coupon;
+import final_backend.Coupon.model.DiscountType;
 import final_backend.Coupon.model.Status;
 import final_backend.Coupon.repository.CouponRepository;
+import final_backend.Member.exception.CouponAlreadyAssignedException;
+import final_backend.Member.model.User;
+import final_backend.Member.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CouponServiceImpl implements CouponService {
 
-    private final CouponRepository couponRepository;
-
-    public CouponServiceImpl(CouponRepository couponRepository) {
-        this.couponRepository = couponRepository;
-    }
-    // 다른 필요한 로직과 함께 쿠폰 코드를 생성하는 메소드 추가
+    @Autowired
+    private  UserRepository userRepository;
+    @Autowired
+    private  CouponRepository couponRepository;
 
     @Override
     public String generateCouponCode() {
@@ -26,8 +31,22 @@ public class CouponServiceImpl implements CouponService {
         return RandomStringUtils.randomAlphanumeric(12);
     }
 
+    @Override
+    @Transactional
+    public Long createJoinCoupon(){
+        Coupon newCoupon = new Coupon();
+        newCoupon.setCode(generateCouponCode());
+        newCoupon.setCouponContent("회원가입축하쿠폰");
+        newCoupon.setDiscountType(DiscountType.PERCENTAGE);
+        newCoupon.setDiscountValue(10L);
+        newCoupon.setStatus(Status.DEFAULT);
+        newCoupon.setCreatedAt(LocalDateTime.now());
+        newCoupon.setUpdatedAt(LocalDateTime.now());
+        newCoupon.setEndAt(LocalDateTime.now().plusMonths(1));
+        couponRepository.save(newCoupon);
+        return newCoupon.getCpid();
+    }
 
-    // CouponService.java
 
     @Override
     public Coupon createCoupon(Coupon coupon) {
@@ -39,6 +58,8 @@ public class CouponServiceImpl implements CouponService {
         if (coupon.getDiscountType() != null) {
             newCoupon.setDiscountType(coupon.getDiscountType());
         }
+        System.out.println("Discount Value: " + coupon.getDiscountValue());
+
         newCoupon.setDiscountValue(coupon.getDiscountValue());
         newCoupon.setStatus(Status.DEFAULT);
         newCoupon.setCreatedAt(LocalDateTime.now());
@@ -50,15 +71,15 @@ public class CouponServiceImpl implements CouponService {
         return couponRepository.save(newCoupon);
     }
 
-    // 새로운 메서드 추가: 여러 개의 쿠폰을 생성하는 기능
-//    public List<Coupon> createCoupons(List<Coupon> coupons) {
-//        List<Coupon> createdCoupons = new ArrayList<>();
-//        for (Coupon coupon : coupons) {
-//            Coupon createdCoupon = createCoupon(coupon);
-//            createdCoupons.add(createdCoupon);
-//        }
-//        return createdCoupons;
-//    }
+    public void deleteCoupon(Long cpid) throws Exception {
+        Optional<Coupon> coupon = couponRepository.findById(cpid);
+        if (coupon.isPresent()) {
+            couponRepository.deleteById(cpid);
+        } else {
+            throw new Exception("Coupon not found");
+        }
+    }
+
 
 
     @Override
@@ -71,5 +92,22 @@ public class CouponServiceImpl implements CouponService {
         return couponRepository.findAll();
     }
 
-    // 다른 비즈니스 로직들...
+    @Transactional
+    public void assignCouponToUser(Long couponId, Long userId) throws CouponAlreadyAssignedException {
+        // 유저와 쿠폰을 찾음
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new RuntimeException("Coupon not found"));
+
+        if (coupon.getUserId() != null) {
+            throw new CouponAlreadyAssignedException("Coupon already assigned");
+        }
+        // 쿠폰을 유저에게 할당
+        coupon.setUserDTO(user);
+        coupon.setUserId(user.getUid());
+        coupon.setUserName(user.getNickName());
+        coupon.setAssignedAt(LocalDateTime.now());
+        // 유저의 쿠폰 리스트에 쿠폰 추가
+        user.getCouponList().add(coupon);
+
+    }
 }

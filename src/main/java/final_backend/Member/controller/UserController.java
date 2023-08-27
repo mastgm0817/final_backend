@@ -1,4 +1,5 @@
 package final_backend.Member.controller;
+import final_backend.Coupon.service.CouponService;
 import final_backend.Member.exception.ApiResponse;
 import final_backend.Member.model.*;
 import final_backend.Member.service.S3Service;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -21,6 +23,9 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CouponService couponService;
+
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
@@ -31,14 +36,15 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-    @DeleteMapping("/users/{uid}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String uid) {
-        Long num = Long.valueOf(uid);
-        boolean deleted = userService.deleteUser(num);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @DeleteMapping("/users/delete/{nickname}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String nickname) {
+        User foundUser = userService.findByNickName(nickname);
+        Long num = foundUser.getUid();
+        try {
+            userService.deleteUser(num);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
     @PutMapping("/users/{uid}")
@@ -61,22 +67,23 @@ public class UserController {
         }
         else{
             User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName()); // 신규 유저 객체 생성
-            userService.createUser(newUser);
+            User createdUser = userService.createUser(newUser);
+            Long couponId = couponService.createJoinCoupon();
+            couponService.assignCouponToUser(couponId, createdUser.getUid());
             String token = userService.login(newUser.getNickName(), newUser.getEmail(), ""); // 토큰 생성
             return new ResponseEntity<>(new TokenResponse(token), HttpStatus.CREATED);
         }
     }
     @PostMapping("/users/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody UserLoginRequest dto){
+    public ResponseEntity<TokenResponse> login(@RequestBody UserLoginRequest dto) {
         User existingUser = userService.findByEmail(dto.getEmail());
         System.out.println(dto.getEmail());
+
         if (existingUser != null) { // 사용자가 존재
             System.out.println("컨트롤러 지나감");
             String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
-//            String refreshToken = userService.refresh(dto.getEmail(), dto.getNickName(), "");
             return ResponseEntity.ok().body(new TokenResponse(accessToken));
-        }
-        else{
+        } else {
             // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new TokenResponse("회원이 아닌 유저입니다."));
