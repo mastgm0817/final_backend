@@ -6,6 +6,7 @@ import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.model.UserUpdateRequest;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -68,6 +69,12 @@ public class UserServiceImpl implements UserService {
 
     public Map<String, Boolean> checkNickNameExists(String nickName) {
         Map<String, Boolean> response = new HashMap<>();
+
+        if (StringUtils.isEmpty(nickName)) {
+            response.put("error", null);
+            return response;
+        }
+
         boolean exists = userRepository.existsByNickName(nickName);
         response.put("exists", exists);
         return response;
