@@ -3,6 +3,7 @@ package final_backend.Member.controller;
 
 import final_backend.Coupon.service.CouponService;
 import final_backend.Member.model.*;
+import final_backend.Member.repository.UserRepository;
 import final_backend.Member.service.UserService;
 import final_backend.Utils.NomalTokenResponse;
 import final_backend.Utils.TokenResponse;
@@ -36,7 +37,7 @@ public class NormalUserController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<NomalTokenResponse> joinNormalUser(@RequestBody UserCredential userCredential) {
+    public ResponseEntity<NomalTokenResponse> joinNormalUser(@RequestBody UserCredential userCredential) throws IllegalAccessException {
         User existingUser = userService.findByEmail(userCredential.getEmail());
         // 이미 가입된 회원일 때
         if (existingUser != null) { // 사용자가 존재하는지 확인
@@ -55,16 +56,25 @@ public class NormalUserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<NomalTokenResponse> loginNormalUser(@RequestBody UserLoginRequest dto){
+    public ResponseEntity<?> loginNormalUser(@RequestBody UserLoginRequest dto) throws IllegalAccessException {
         User existingUser = userService.findByEmail(dto.getEmail());
         System.out.println(dto.getEmail());
+        System.out.println(existingUser.getBlackListDetails());
         if (existingUser != null) { // 사용자가 존재
-            System.out.println("컨트롤러 지나감");
-            String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
-            String profileImage = existingUser.getProfileImage();
-            String nickName = existingUser.getNickName();
-//            String refreshToken = userService.refresh(dto.getEmail(), dto.getNickName(), "");
-            return ResponseEntity.ok().body(new NomalTokenResponse(accessToken, profileImage, nickName ));
+            if (existingUser.getBlackListDetails() == null) {
+                System.out.println("컨트롤러 지나감");
+                try {
+                    String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
+                    String profileImage = existingUser.getProfileImage();
+                    String nickName = existingUser.getNickName();
+                    //            String refreshToken = userService.refresh(dto.getEmail(), dto.getNickName(), "");
+                    return ResponseEntity.ok().body(new NomalTokenResponse(accessToken, profileImage, nickName));
+                }
+                catch (IllegalAccessException e){
+                    return ResponseEntity.badRequest().body(e.getMessage());
+                }
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new NomalTokenResponse("차단된 유저입니다","fail",""));
         }
         else{
             // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환

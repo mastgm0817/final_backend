@@ -94,7 +94,9 @@ public class UserController {
 //    }
 
     @PostMapping("/users/join")
+
     public ResponseEntity<TokenAndUserResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
+
         User existingUser = userService.findByEmail(userJoinRequest.getEmail());
         if (existingUser != null) {
             return new ResponseEntity<>(new TokenAndUserResponse("User with the provided email already exists.", null), HttpStatus.OK);
@@ -112,6 +114,7 @@ public class UserController {
     }
 
     @PostMapping("/users/login")
+
     public ResponseEntity<TokenAndNickNameResponse> login(@RequestBody UserLoginRequest dto) {
         User existingUser = userService.findByEmail(dto.getEmail());
 
