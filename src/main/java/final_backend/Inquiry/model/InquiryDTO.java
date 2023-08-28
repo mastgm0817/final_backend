@@ -17,9 +17,9 @@ public class InquiryDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;  // 문의 내용
-    private String completed; // 완료 여부
+    private boolean completed; // 완료 여부
     private LocalDate createdAt; // 문의 시간
-
+    private LocalDate completedAt;
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid")

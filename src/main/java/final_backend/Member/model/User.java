@@ -4,6 +4,7 @@ import final_backend.Admin.model.UserBlackListDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import final_backend.Coupon.model.Coupon;
 //import final_backend.Inquiry.model.InquiryDTO;
+import final_backend.Inquiry.model.InquiryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -48,6 +49,9 @@ public class User {
     @OneToOne(mappedBy = "blockUser", cascade = CascadeType.ALL)
     private UserBlackListDTO blackListDetails;
 
+    @JsonManagedReference
+    @OneToMany
+    private List<InquiryDTO> inquiryList = new ArrayList<>();
 //    @JsonManagedReference
 //    @Builder.Default
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
