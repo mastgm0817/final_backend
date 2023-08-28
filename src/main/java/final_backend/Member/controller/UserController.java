@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @PostMapping("/users/join")
-    public ResponseEntity<TokenResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
+    public ResponseEntity<TokenResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) throws IllegalAccessException {
         User existingUser = userService.findByEmail(userJoinRequest.getEmail());
         // 이미 가입된 회원일 때
         if (existingUser != null) { // 사용자가 존재하는지 확인
@@ -75,13 +75,18 @@ public class UserController {
         }
     }
     @PostMapping("/users/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody UserLoginRequest dto) {
+    public ResponseEntity<?> login(@RequestBody UserLoginRequest dto) {
         User existingUser = userService.findByEmail(dto.getEmail());
         System.out.println(dto.getEmail());
 
         if (existingUser != null) { // 사용자가 존재
             System.out.println("컨트롤러 지나감");
-            String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
+            String accessToken = null;
+            try {
+                accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
+            } catch (IllegalAccessException e) {
+                return ResponseEntity.badRequest().body(new TokenResponse("차단된 유저 입니다."));
+            }
             return ResponseEntity.ok().body(new TokenResponse(accessToken));
         } else {
             // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환

@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
             userDTO.setUserRole(user.getUserRole());
             userDTO.setCouponList(user.getCouponList());
             userDTO.setBlackListDetails(user.getBlackListDetails());
-
+            userDTO.setLover(user.getLover());
             userDTOs.add(userDTO);  // 생성한 User 객체를 userDTOs 리스트에 추가합니다.
         }
 
