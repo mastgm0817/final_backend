@@ -95,7 +95,7 @@ public class UserController {
 
     @PostMapping("/users/join")
 
-    public ResponseEntity<TokenAndUserResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
+    public ResponseEntity<TokenAndUserResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) throws IllegalAccessException {
 
         User existingUser = userService.findByEmail(userJoinRequest.getEmail());
         if (existingUser != null) {
@@ -115,7 +115,7 @@ public class UserController {
 
     @PostMapping("/users/login")
 
-    public ResponseEntity<TokenAndNickNameResponse> login(@RequestBody UserLoginRequest dto) {
+    public ResponseEntity<TokenAndNickNameResponse> login(@RequestBody UserLoginRequest dto) throws IllegalAccessException {
         User existingUser = userService.findByEmail(dto.getEmail());
 
         if (existingUser != null) {
