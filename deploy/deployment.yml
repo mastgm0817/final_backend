@@ -16,7 +16,7 @@ spec:
         kubernetes.io/hostname: worker2   # 원하는 노드 이름 지정
       containers:
         - name: backend-pod
-          image: 119.197.27.55:5000/backend@sha256:0003ab8f5f6d629576418af7c6de9dfa555d99844867aa5b157a839eb0ed9c56
+          image: 119.197.27.55:5000/backend@sha256:6cff73eda8c518cfbacaceedad63090182150ad3ec7836bd7d9654c19221ff50
           ports:
             - containerPort: 8082
 ---
