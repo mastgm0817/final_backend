@@ -1,5 +1,6 @@
 package final_backend.Admin.controller;
 
+import com.google.analytics.data.v1beta.Row;
 import com.google.analytics.data.v1beta.RunReportResponse;
 import final_backend.Admin.Ga;
 import final_backend.Admin.model.BlackListRequest;
@@ -12,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static final_backend.Admin.Ga.sampleRunReport;
 
@@ -51,14 +55,19 @@ public class AdminController {
             return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
     }
-    @GetMapping("/GA/{dim}/{met}")
-    public ResponseEntity<?> getAnalytics(@PathVariable("dim") String dim, @PathVariable("met") String met) throws Exception {
+    @GetMapping("/GA/{dim}/{met}/{startDate}/{endDate}")
+    public ResponseEntity<?> getAnalytics(@PathVariable("dim") String dim, @PathVariable("met") String met, @PathVariable("startDate") String startDate , @PathVariable("endDate") String endDate) throws Exception {
         String propertyId = "403087661";
-        String startDate = "2023-08-18";
-        String endDate = "2023-08-28";
 
         RunReportResponse reportResponse = Ga.sampleRunReport(propertyId, dim, met, startDate, endDate);
 
-        return ResponseEntity.ok(reportResponse);
+        List<Map<String, Object>> resultRows = new ArrayList<>();
+        for (Row row : reportResponse.getRowsList()) {
+            Map<String, Object> rowMap = new HashMap<>();
+            rowMap.put("dimension_value", row.getDimensionValues(0).getValue());
+            rowMap.put("metric_value", Long.parseLong(row.getMetricValues(0).getValue()));
+            resultRows.add(rowMap);
+        }
+        return ResponseEntity.ok(resultRows);
     }
 }
