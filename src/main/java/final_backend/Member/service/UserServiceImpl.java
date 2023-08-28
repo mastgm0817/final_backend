@@ -1,12 +1,12 @@
 package final_backend.Member.service;
 
-import final_backend.Admin.model.UserBlackListDTO;
-import final_backend.Admin.repository.UserBlackListRepository;
+import final_backend.Coupon.model.Coupon;
 import final_backend.Coupon.repository.CouponRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,16 +19,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final CouponRepository couponRepository;
+    @Autowired
+    private CouponRepository couponRepository;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final UserBlackListRepository userBlackListRepository;
 
 
-    public UserServiceImpl(UserRepository userRepository, CouponRepository couponRepository, UserBlackListRepository userBlackListRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.couponRepository = couponRepository;
-        this.userBlackListRepository = userBlackListRepository;
     }
 
     //환경 변수 가져오기
@@ -46,17 +44,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User findByNickName(String name) {
         User user = userRepository.findByNickName(name);
-        User userDTO = new User();
-        userDTO.setUid(user.getUid());
-        userDTO.setNickName(user.getNickName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setUserRole(user.getUserRole());
-//        userDTO.setCouponList(user.getCouponList());
-        userDTO.setBlackListDetails(user.getBlackListDetails());
-        userDTO.setLover(user.getLover());
-        return userDTO;
+
+        if (user != null) {
+            User userDTO = new User();
+            userDTO.setUid(user.getUid());
+            userDTO.setNickName(user.getNickName());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setUserRole(user.getUserRole());
+            userDTO.setCouponList(user.getCouponList());
+            userDTO.setBlackListDetails(user.getBlackListDetails());
+            userDTO.setLover(user.getLover());
+
+            return userDTO;
+        } else {
+            return null; // 또는 예외 처리를 하거나 다른 처리 방법을 선택
+        }
     }
 
 
@@ -119,13 +124,8 @@ public class UserServiceImpl implements UserService {
     private String secretKey;
     private Long expiredMs = 1000 * 60 * 24 * 60l;
     @Override
-    public String login(String email, String nickName, String password) throws IllegalAccessException {
+    public String login(String email, String nickName, String password){
 //        return JwtUtil.createJwt(nickName, email, secretKey, expiredMs);
-        User user = userRepository.findByEmail(email);
-        UserBlackListDTO blacklistedUser = userBlackListRepository.findByBlockUser(user);
-        if (blacklistedUser != null) { // 해당 사용자가 블랙리스트에 있다면
-            throw new IllegalAccessException("Your account has been banned for the following reason: " + blacklistedUser.getReason());
-        }
         return JwtUtil.createJwt(email, nickName, secretKey, expiredMs);
     }
 

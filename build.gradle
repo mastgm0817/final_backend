@@ -31,9 +31,7 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.91' // Amazon S3 SDK
 
 	// Google Analytics
-	implementation 'com.google.apis:google-api-services-analyticsreporting:v4-rev20211020-2.0.0'
-	implementation 'com.google.apis:google-api-services-analyticsdata:v1beta-rev20230808-2.0.0'
-
+	implementation 'com.google.analytics:google-analytics-data:0.16.0'
 
 	// social login
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'

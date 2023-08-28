@@ -1,5 +1,7 @@
 package final_backend.Admin.controller;
 
+import com.google.analytics.data.v1beta.RunReportResponse;
+import final_backend.Admin.Ga;
 import final_backend.Admin.model.BlackListRequest;
 import final_backend.Admin.model.UserBlackListDTO;
 import final_backend.Admin.service.AdminServiceImpl;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static final_backend.Admin.Ga.sampleRunReport;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -47,9 +51,14 @@ public class AdminController {
             return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
     }
+    @GetMapping("/GA/{dim}/{met}")
+    public ResponseEntity<?> getAnalytics(@PathVariable("dim") String dim, @PathVariable("met") String met) throws Exception {
+        String propertyId = "403087661";
+        String startDate = "2023-08-18";
+        String endDate = "2023-08-28";
 
-//    @GetMapping("/boards")
-//    public ResponseEntity<List<Board>> getAllBoard (){
-//        return
-//    }
+        RunReportResponse reportResponse = Ga.sampleRunReport(propertyId, dim, met, startDate, endDate);
+
+        return ResponseEntity.ok(reportResponse);
+    }
 }
