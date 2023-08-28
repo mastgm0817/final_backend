@@ -50,8 +50,10 @@ public class User {
     private UserBlackListDTO blackListDetails;
 
     @JsonManagedReference
+    @Builder.Default
     @OneToMany
     private List<InquiryDTO> inquiryList = new ArrayList<>();
+
 //    @JsonManagedReference
 //    @Builder.Default
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

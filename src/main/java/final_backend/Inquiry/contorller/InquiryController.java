@@ -1,6 +1,7 @@
 package final_backend.Inquiry.contorller;
 
 import final_backend.Inquiry.model.InquiryDTO;
+import final_backend.Inquiry.model.InquiryRequest;
 import final_backend.Inquiry.service.InquiryService;
 import final_backend.Member.model.User;
 import final_backend.Member.service.UserService;
@@ -18,9 +19,9 @@ public class InquiryController {
         this.inquiryService = inquiryService;
         this.userService = userService;
     }
-
+e
     @PostMapping("/{nickName}")
-    public ResponseEntity<?> createInquiry(@PathVariable("nickName") String nickName, @RequestBody InquiryDTO inquiryDTO) {
+    public ResponseEntity<?> createInquiry(@PathVariable("nickName") String nickName, @RequestBody InquiryRequest inquiryDTO) {
         User user = userService.findByNickName(nickName);
         if (user!=null) {
             try {
@@ -28,6 +29,20 @@ public class InquiryController {
             }
             catch (RuntimeException e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/{nickName}")
+    public ResponseEntity<?> getMyInquiry(@PathVariable("nickName") String nickName) {
+        User user = userService.findByNickName(nickName);
+        if (user!=null) {
+            try{
+                return ResponseEntity.ok(inquiryService.findByUser(user));
+            }
+            catch (RuntimeException e){
+                return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

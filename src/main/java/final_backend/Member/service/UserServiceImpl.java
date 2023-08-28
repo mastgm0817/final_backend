@@ -1,9 +1,9 @@
 package final_backend.Member.service;
 
-import final_backend.Coupon.model.Coupon;
 import final_backend.Coupon.repository.CouponRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
+import final_backend.Member.model.UserUpdateRequest;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -57,11 +60,38 @@ public class UserServiceImpl implements UserService {
             userDTO.setCouponList(user.getCouponList());
             userDTO.setBlackListDetails(user.getBlackListDetails());
             userDTO.setLover(user.getLover());
-
+            userDTO.setInquiryList(user.getInquiryList());
             return userDTO;
         } else {
             return null; // 또는 예외 처리를 하거나 다른 처리 방법을 선택
         }
+    }
+
+    public Map<String, Boolean> checkNickNameExists(String nickName) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = userRepository.existsByNickName(nickName);
+        response.put("exists", exists);
+        return response;
+    }
+
+    @Override
+    public User updateUser(UserUpdateRequest request) {
+        // 중복 닉네임 체크
+        if(userRepository.existsByNickName(request.getNickName())) {
+            throw new IllegalArgumentException("NickName already exists");
+        }
+
+        // 이메일로 유저 찾기
+        User user = userRepository.findByEmail(request.getEmail());
+        if(user == null){
+            throw new IllegalArgumentException("그런 유저는 없습니다.");
+        }
+
+        // 유저 정보 업데이트
+        user.setUserName(request.getUserName());
+        user.setNickName(request.getNickName());
+
+        return userRepository.save(user);
     }
 
 
@@ -150,17 +180,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByNickName(nickName);
     }
 
-    @Override
-    public User updateNickName(String nickName, String newNickname) {
-        User user = userRepository.findByNickName(nickName);
+    public boolean updateNickName(String oldNickname, String newNickname) {
+        User user = userRepository.findByNickName(oldNickname);
 
-        // 중복된 닉네임인 경우 에외처리
-        if ( userRepository.existsByNickName(newNickname)) {
-            throw new IllegalArgumentException("Nickname already taken: " + newNickname);
+        if (user != null) {
+            user.setNickName(newNickname);
+            userRepository.save(user); // DB에 저장
+            return true;
+        } else {
+            return false;
         }
-
-        user.setNickName(newNickname);
-        return userRepository.save(user);
     }
 
     @Override

@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/v1")
@@ -58,42 +61,73 @@ public class UserController {
         }
     }
 
-    @PostMapping("/users/join")
-    public ResponseEntity<TokenResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) throws IllegalAccessException {
-        User existingUser = userService.findByEmail(userJoinRequest.getEmail());
-        // 이미 가입된 회원일 때
-        if (existingUser != null) { // 사용자가 존재하는지 확인
-            return new ResponseEntity<>(new TokenResponse("User with the provided email already exists."), HttpStatus.OK);
+    @GetMapping("/users/check/nickname")
+    public Map<String, Boolean> checkNickName(@RequestParam String nickName) {
+        return userService.checkNickNameExists(nickName);
+    }
+
+    @PostMapping("/users/join/update")
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest updateRequest) {
+        try {
+            User updatedUser = userService.updateUser(updateRequest);
+            return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        else{
-            User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName()); // 신규 유저 객체 생성
+    }
+
+//    @PostMapping("/users/join")
+//    public ResponseEntity<TokenResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) {
+//        User existingUser = userService.findByEmail(userJoinRequest.getEmail());
+//        // 이미 가입된 회원일 때
+//        if (existingUser != null) { // 사용자가 존재하는지 확인
+//            return new ResponseEntity<>(new TokenResponse("User with the provided email already exists."), HttpStatus.OK);
+//        }
+//        else{
+//            User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName()); // 신규 유저 객체 생성
+//            User createdUser = userService.createUser(newUser);
+//            Long couponId = couponService.createJoinCoupon();
+//            couponService.assignCouponToUser(couponId, createdUser.getUid());
+//            String token = userService.login(newUser.getNickName(), newUser.getEmail(), ""); // 토큰 생성
+//            return new ResponseEntity<>(new TokenResponse(token), HttpStatus.CREATED);
+//        }
+//    }
+
+    @PostMapping("/users/join")
+
+    public ResponseEntity<TokenAndUserResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) throws IllegalAccessException {
+
+        User existingUser = userService.findByEmail(userJoinRequest.getEmail());
+        if (existingUser != null) {
+            return new ResponseEntity<>(new TokenAndUserResponse("User with the provided email already exists.", null), HttpStatus.OK);
+        } else {
+            User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName());
             User createdUser = userService.createUser(newUser);
             Long couponId = couponService.createJoinCoupon();
             couponService.assignCouponToUser(couponId, createdUser.getUid());
-            String token = userService.login(newUser.getNickName(), newUser.getEmail(), ""); // 토큰 생성
-            return new ResponseEntity<>(new TokenResponse(token), HttpStatus.CREATED);
-        }
-    }
-    @PostMapping("/users/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequest dto) {
-        User existingUser = userService.findByEmail(dto.getEmail());
-        System.out.println(dto.getEmail());
+            String token = userService.login(newUser.getNickName(), newUser.getEmail(), "");
 
-        if (existingUser != null) { // 사용자가 존재
-            System.out.println("컨트롤러 지나감");
-            String accessToken = null;
-            try {
-                accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
-            } catch (IllegalAccessException e) {
-                return ResponseEntity.badRequest().body(new TokenResponse("차단된 유저 입니다."));
-            }
-            return ResponseEntity.ok().body(new TokenResponse(accessToken));
-        } else {
-            // 사용자를 찾을 수 없는 경우, 적절한 상태 코드와 메시지를 반환
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new TokenResponse("회원이 아닌 유저입니다."));
+            TokenAndUserResponse response = new TokenAndUserResponse(token, createdUser);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
     }
+
+    @PostMapping("/users/login")
+
+    public ResponseEntity<TokenAndNickNameResponse> login(@RequestBody UserLoginRequest dto) throws IllegalAccessException {
+        User existingUser = userService.findByEmail(dto.getEmail());
+
+        if (existingUser != null) {
+            String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
+            String nickName = existingUser.getNickName(); // 또는 어떤 방법으로든 닉네임을 가져옵니다.
+            return ResponseEntity.ok().body(new TokenAndNickNameResponse(accessToken, nickName));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new TokenAndNickNameResponse("회원이 아닌 유저입니다.", null));
+        }
+    }
+
     // 내 정보 받아오기
     @GetMapping("/users/info/{nickName}")
     public ResponseEntity<User> getUserInfo(@PathVariable("nickName") String nickName) throws UnsupportedEncodingException {
@@ -105,20 +139,19 @@ public class UserController {
         }
     }
     // 내 정보 중복확인 후 수정
-    @PatchMapping("/users/info/update/{nickName}")
-    public ResponseEntity<Object> updateNickName(@PathVariable String nickName,
-                                                 @RequestBody Map<String, String> request,
-                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        String newNickname = request.get("newNickname");
-        User currentUser = userService.findByNickName(nickName);
-        // 중복 닉네임 경우 예외 처리
-        if ( userService.isNicknameTaken(newNickname)) {
-            return ResponseEntity.badRequest().body(new ApiResponse("Nickname already taken: " + newNickname));
+
+    @PostMapping("/users/info/updateNickname")
+    public ResponseEntity<String> updateNickName(@RequestParam String oldNickname,
+                                                 @RequestParam String newNickname) {
+        boolean updateStatus = userService.updateNickName(oldNickname, newNickname);
+
+        if (updateStatus) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        // 중복되지 않은 경우 닉네임 업데이트
-        User updateUser = userService.updateNickName(nickName, newNickname);
-        return ResponseEntity.ok(new ApiResponse("Nickname updated successfully: " + newNickname));
     }
+
     // 연인 정보 검색 후 불러오기
     @GetMapping("/users/info/search/{inputnickName}")
     public ResponseEntity<User> getUserInfoByNickName(@PathVariable String inputnickName) {

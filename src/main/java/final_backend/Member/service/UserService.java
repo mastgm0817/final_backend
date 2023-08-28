@@ -2,8 +2,10 @@ package final_backend.Member.service;
 
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
+import final_backend.Member.model.UserUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     User createUser(User user);
@@ -34,8 +36,12 @@ public interface UserService {
 
     boolean isNicknameTaken(String newNickname);
 
-    User updateNickName(String nickName, String newNickname);
+    boolean updateNickName(String nickName, String newNickname);
 
     User updateLoverInfo(User user);
+
+    Map<String, Boolean> checkNickNameExists(String nickName);
+
+    User updateUser(UserUpdateRequest request);
 
 }
