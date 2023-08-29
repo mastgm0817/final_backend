@@ -102,6 +102,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
+    public List<User> findAllByEmail(String email) {
+        return userRepository.findAllByEmail(email);
+    }
+
 
     @Override
     public User findByEmail(String email) {
