@@ -1,5 +1,6 @@
 package final_backend.Member.service;
 
+import final_backend.Coupon.model.Coupon;
 import final_backend.Coupon.repository.CouponRepository;
 import final_backend.Member.exception.BlockedUserException;
 import final_backend.Member.exception.UserNotFoundException;
@@ -65,6 +66,8 @@ public class UserServiceImpl implements UserService {
             userDTO.setCouponList(user.getCouponList());
             userDTO.setBlackListDetails(user.getBlackListDetails());
             userDTO.setLover(user.getLover());
+            userDTO.setInquiryList(user.getInquiryList());
+            userDTO.setUserName(user.getUserName());
 
             return userDTO;
         } else {
@@ -298,5 +301,4 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
     }
-
 }
