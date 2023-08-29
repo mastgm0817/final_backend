@@ -39,6 +39,7 @@ public class PaymentController {
 
         Map<String, Object> params = (Map<String, Object>) config.get("params");
         Map<String, Object> couponInfo = (Map<String, Object>) config.get("couponInfo");
+
         String nickName = (String) config.get("nickName");
         String itemName = (String) params.get("item_name");
         int totalAmount = (Integer) params.get("total_amount");
