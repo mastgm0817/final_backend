@@ -89,7 +89,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(request.getEmail());
+        User user = userRepository.findByNickName(request.getUserName());
+
         if(user == null){
             throw new IllegalArgumentException("그런 유저는 없습니다.");
         }

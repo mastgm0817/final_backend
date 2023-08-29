@@ -94,11 +94,11 @@ public class UserController {
 //    }
 
     @PostMapping("/users/join")
-
     public ResponseEntity<TokenAndUserResponse> joinUser(@RequestBody UserJoinRequest userJoinRequest) throws IllegalAccessException {
 
         User existingUser = userService.findByEmail(userJoinRequest.getEmail());
-        if (existingUser != null) {
+        String providerName = userJoinRequest.getProviderName();
+        if (existingUser != null && existingUser.getProviderName() == providerName) {
             return new ResponseEntity<>(new TokenAndUserResponse("User with the provided email already exists.", null), HttpStatus.OK);
         } else {
             User newUser = userJoinRequest.toUser(userJoinRequest.getProviderName());
@@ -114,11 +114,13 @@ public class UserController {
     }
 
     @PostMapping("/users/login")
-
     public ResponseEntity<TokenAndNickNameResponse> login(@RequestBody UserLoginRequest dto) throws IllegalAccessException {
         User existingUser = userService.findByEmail(dto.getEmail());
+        String providerName = dto.getProviderName();
+        System.out.println("dto providerName " + providerName);
+        System.out.println("existing user providerName "+ existingUser.getProviderName());
 
-        if (existingUser != null) {
+        if (existingUser != null && existingUser.getProviderName() == providerName) {
             String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
             String nickName = existingUser.getNickName(); // 또는 어떤 방법으로든 닉네임을 가져옵니다.
             return ResponseEntity.ok().body(new TokenAndNickNameResponse(accessToken, nickName));
