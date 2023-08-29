@@ -111,6 +111,23 @@ public class CouponServiceImpl implements CouponService {
         }
     }
 
+    public void usedCoupon(String couponCode) {
+        Optional<Coupon> optionalCoupon = couponRepository.findByCode(couponCode);
+        if (optionalCoupon.isPresent()) {
+            Coupon coupon = optionalCoupon.get();
+
+            // 쿠폰의 상태를 사용함으로 변경
+            coupon.setStatus(Status.USED);
+
+            // 쿠폰의 소유자를 null로 설정
+            coupon.setUserId(null);
+            coupon.setUserName(null);
+            coupon.setUserDTO(null);
+
+            couponRepository.save(coupon);
+        }
+    }
+
     @Scheduled(fixedRate = 60000 * 5)  // 5분마다 실행
     public void releaseExpiredReservations() {
         List<Coupon> reservedCoupons = couponRepository.findAllByStatus(Status.USING);
