@@ -64,14 +64,14 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boards = new ArrayList<>();
         System.out.println(findStr);
         System.out.println(findingMethod);
-        if ("title".equals(findingMethod)) {
+        if ("1".equals(findingMethod)) {           //닉네임
+            boards = boardRepository.findByNickNameContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
+        } else if ("2".equals(findingMethod)) {     //제목
             boards = boardRepository.findBybTitleContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
             System.out.println(boards);
-        } else if ("content".equals(findingMethod)) {
+        } else if ("3".equals(findingMethod)) {     //내용
             boards = boardRepository.findBybContentContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
-        } else if ("nickname".equals(findingMethod)) {
-            boards = boardRepository.findByNickNameContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
-        }else if ("mine".equals(findingMethod)) {
+        }else if ("4".equals(findingMethod)) {      //내글
             boards = boardRepository.findByNickNameContainingAndBidLessThanOrderByBidDesc(findStr, cursorId, page);
         } else {
             boards = boardRepository.findByBidLessThanOrderByBidDesc(cursorId, page);
@@ -103,10 +103,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board createBoard(Board board) {
         LocalDateTime currentTime = LocalDateTime.now();
-        board.setB_createdAt(currentTime);
-        board.setB_updatedAt(currentTime);
-        board.setB_views(0L);
-        board.setB_recommendations(0L);
+        board.setBCreatedAt(currentTime);
+        board.setBUpdatedAt(currentTime);
+        board.setBViews(0L);
+        board.setBRecommendations(0L);
         return boardRepository.save(board);
     }
 
@@ -123,7 +123,7 @@ public class BoardServiceImpl implements BoardService {
             existingBoard.setBTitle(updatedBoard.getBTitle());
             existingBoard.setBContent(updatedBoard.getBContent());
             existingBoard.setUid(updatedBoard.getUid());
-            existingBoard.setB_updatedAt(LocalDateTime.now());
+            existingBoard.setBUpdatedAt(LocalDateTime.now());
             return boardRepository.save(existingBoard);
         } else {
             return null;
@@ -132,7 +132,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board increaseViewCount(Board board) {
-        board.setB_views(board.getB_views() + 1);
+        board.setBViews(board.getBViews() + 1);
         System.out.println(board.getBid()+"조회됨");
         return boardRepository.save(board);
     }
@@ -142,7 +142,7 @@ public class BoardServiceImpl implements BoardService {
         Optional<Board> boardOptional = boardRepository.findById(bid);
         if (boardOptional.isPresent()) {
             Board existingBoard = boardOptional.get();
-            existingBoard.setB_recommendations(existingBoard.getB_recommendations()+1);
+            existingBoard.setBRecommendations(existingBoard.getBRecommendations()+1);
             System.out.println(bid +" 번 게시글 추천됨");
             return boardRepository.save(existingBoard);
         } else {

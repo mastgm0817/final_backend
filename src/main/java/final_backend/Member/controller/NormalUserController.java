@@ -44,7 +44,7 @@ public class NormalUserController {
             return new ResponseEntity<>(new NomalTokenResponse("User with the provided email already exists.", "nothing",""), HttpStatus.OK);
         }
         else{
-            User newUser = userCredential.toUser(userCredential.getProviderName()); // 신규 유저 객체 생성
+            User newUser = userCredential.toUser("Credentials"); // 신규 유저 객체 생성
             userService.createUser(newUser);
             Long couponId = couponService.createJoinCoupon();
             couponService.assignCouponToUser(couponId, newUser.getUid());

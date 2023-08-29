@@ -25,4 +25,6 @@ public interface CouponService {
 
     @Transactional
     void assignCouponToUser(Long couponId, Long userId) throws CouponAlreadyAssignedException;
+
+    void usedCoupon(String couponCode);
 }

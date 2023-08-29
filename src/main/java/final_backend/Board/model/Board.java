@@ -21,11 +21,11 @@ public class Board {
 
     private String bTitle;
     private String bContent;
-    private LocalDateTime b_createdAt;
-    private LocalDateTime b_updatedAt;
-    private Long b_views;
+    private LocalDateTime bCreatedAt;
+    private LocalDateTime bUpdatedAt;
+    private Long bViews;
     private Long comments;
-    private Long b_recommendations;
+    private Long bRecommendations;
 //
     @JsonManagedReference
     @OneToMany(mappedBy = "boardDTO", cascade = CascadeType.ALL)

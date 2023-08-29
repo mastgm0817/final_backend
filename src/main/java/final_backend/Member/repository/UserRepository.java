@@ -11,6 +11,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);
     User findByUid(Long uid);
 
+    List<User> findAllByEmail(String email);
+
+    User findByUserName(String name);
+
     User findByNickName(String name);
     /* 이메일이 Login ID의 역할을 하기 때문에 이메일로 계정 찾는 메소드 구현 */
 

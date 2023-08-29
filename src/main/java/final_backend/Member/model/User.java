@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class User {
     private String password;
     private String profileImage;
     private String providerName;
+    private LocalDateTime vipStartTime;
+    private LocalDateTime vipEndTime;
 
     @Enumerated(EnumType.STRING)
     @Default
@@ -80,6 +83,8 @@ public class User {
                 ", providerName='" + providerName + '\'' +
                 ", userRole=" + userRole +
                 ", lover='" + lover + '\'' +
+                ", vipStartTime=" + vipStartTime +
+                ", vipEndTime=" + vipEndTime +
                 '}';
     }
 
