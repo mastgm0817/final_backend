@@ -1,10 +1,13 @@
 package final_backend.Payment.controller;
 
 import final_backend.Coupon.service.CouponService;
+import final_backend.Member.exception.BusinessLogicException;
+import final_backend.Member.exception.ExceptionCode;
 import final_backend.Member.service.UserService;
 import final_backend.Payment.model.KakaoApproveResponse;
+import final_backend.Payment.model.KakaoCancelResponse;
 import final_backend.Payment.model.KakaoReadyResponse;
-import final_backend.Payment.service.PaymentService;
+import final_backend.Payment.service.KakaoPayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +21,6 @@ import java.util.Map;
 @RequestMapping("/api/v1/payment")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
 
     @Autowired
     private UserService userService;
@@ -27,11 +28,54 @@ public class PaymentController {
     @Autowired
     private CouponService couponService;
 
-    @PostMapping("/ready")
-    public KakaoReadyResponse readyToKakaoPay() {
 
-        return paymentService.kakaoPayReady();
+    @Autowired
+    private KakaoPayService kakaoPayService;
+
+    @PostMapping("/ready")
+    public KakaoReadyResponse readyToKakaoPay(@RequestBody Map<String, Object> payInfo) {
+        return kakaoPayService.kakaoPayReady(payInfo);
     }
+
+    @GetMapping("/success")
+    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pgToken) {
+
+        KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken);
+
+        return new ResponseEntity<>(kakaoApprove, HttpStatus.OK);
+    }
+
+    /**
+     * 결제 진행 중 취소
+     */
+    @GetMapping("/cancel")
+    public void cancel() {
+
+        throw new BusinessLogicException(ExceptionCode.PAY_CANCEL);
+    }
+
+    /**
+     * 결제 실패
+     */
+    @GetMapping("/fail")
+    public void fail() {
+
+        throw new BusinessLogicException(ExceptionCode.PAY_FAILED);
+    }
+
+
+    /**
+     * 환불
+     */
+    @PostMapping("/refund")
+    public ResponseEntity refund() {
+
+        KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel();
+
+        return new ResponseEntity<>(kakaoCancelResponse, HttpStatus.OK);
+    }
+
+
 
     @PostMapping("/virtual")
     public ResponseEntity<String> handleVirtualPayment(@RequestBody Map<String, Object> config) {
@@ -39,6 +83,7 @@ public class PaymentController {
 
         Map<String, Object> params = (Map<String, Object>) config.get("params");
         Map<String, Object> couponInfo = (Map<String, Object>) config.get("couponInfo");
+
         String nickName = (String) config.get("nickName");
         String itemName = (String) params.get("item_name");
         int totalAmount = (Integer) params.get("total_amount");
@@ -61,17 +106,6 @@ public class PaymentController {
         }
     }
 
-
-    /**
-     * 결제 성공
-     */
-    @GetMapping("/success")
-    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pgToken) {
-
-        KakaoApproveResponse kakaoApprove = paymentService.ApproveResponse(pgToken);
-
-        return new ResponseEntity<>(kakaoApprove, HttpStatus.OK);
-    }
 
 
 }

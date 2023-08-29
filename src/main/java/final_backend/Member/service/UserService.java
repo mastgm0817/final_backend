@@ -1,8 +1,7 @@
 package final_backend.Member.service;
 
-import final_backend.Member.model.User;
-import final_backend.Member.model.UserCredentialResponse;
-import final_backend.Member.model.UserUpdateRequest;
+import final_backend.Member.model.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -47,4 +46,10 @@ public interface UserService {
     public List<User> findAllByEmail(String email);
 
     public User updateUserRoleAndVipTime(String nickName, String itemName);
+
+    public UserClickResponse handleClick(UserClickRequest request) throws Exception;
+
+    public void resetClickCounts();
+
+
 }

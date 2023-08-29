@@ -37,6 +37,11 @@ public class User {
     private String providerName;
     private LocalDateTime vipStartTime;
     private LocalDateTime vipEndTime;
+    private LocalDateTime lastClickTime;
+    @Builder.Default
+    private Integer clickCount = 0;
+    @Builder.Default
+    private Boolean isBlocked = false;
 
     @Enumerated(EnumType.STRING)
     @Default
@@ -70,6 +75,12 @@ public class User {
         this.profileImage = profileImageUrl;
     }
 
+
+    @PrePersist
+    public void prePersist() {
+        this.clickCount = this.clickCount == null ? 0 : this.clickCount;
+        this.isBlocked = this.isBlocked == null ? false : this.isBlocked;
+    }
     // User 클래스의 toString 메서드에서 couponList와 blackListDetails를 출력하지 않도록 수정
     @Override
     public String toString() {
@@ -85,7 +96,13 @@ public class User {
                 ", lover='" + lover + '\'' +
                 ", vipStartTime=" + vipStartTime +
                 ", vipEndTime=" + vipEndTime +
+                ", lastClickTime=" + lastClickTime +
+                ", clickCount=" + clickCount +
+                ", isBlocked=" + isBlocked +
                 '}';
     }
+
+
+
 
 }

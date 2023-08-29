@@ -2,15 +2,17 @@ package final_backend.Member.service;
 
 import final_backend.Coupon.model.Coupon;
 import final_backend.Coupon.repository.CouponRepository;
-import final_backend.Member.model.User;
-import final_backend.Member.model.UserCredentialResponse;
-import final_backend.Member.model.UserRole;
-import final_backend.Member.model.UserUpdateRequest;
+import final_backend.Member.exception.BlockedUserException;
+import final_backend.Member.exception.UserNotFoundException;
+import final_backend.Member.model.*;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -219,6 +221,11 @@ public class UserServiceImpl implements UserService {
     public User updateUserRoleAndVipTime(String nickName, String itemName) {
         User user = userRepository.findByNickName(nickName);
         if ( user != null) {
+
+            if (user.getIsBlocked() == true) {
+                user.setIsBlocked(false);
+            }
+
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime newVipEndTime = now;
 
@@ -247,6 +254,51 @@ public class UserServiceImpl implements UserService {
             return userRepository.save(user);
         } else {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+    }
+
+    public UserClickResponse handleClick(UserClickRequest request) throws Exception {
+        User user = userRepository.findByNickName(request.getNickName());
+        UserClickResponse response = new UserClickResponse();
+
+        if (user == null) {
+            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
+        }
+
+        // VIP, ADMIN 등급 확인
+        if ("VIP".equals(user.getUserRole().name()) || "ADMIN".equals(user.getUserRole().name()))
+        {
+            response.setMessage("무제한 이용권");
+            return response;
+        }
+        // Normal일 경우
+        else {
+            // 마지막 클릭 시간과 클릭 카운트 업데이트
+            user.setLastClickTime(LocalDateTime.now());
+            user.setClickCount(user.getClickCount() + 1);
+            userRepository.save(user);
+            if (user.getClickCount() >= 3) {
+                user.setIsBlocked(true);
+                userRepository.save(user);
+                response.setMessage("하루 이용 횟수를 다 소진하셨습니다.");
+                response.setRemainingClicks(0);  // 남은 클릭 횟수를 0으로 설정
+            } else {
+                response.setRemainingClicks(3 - user.getClickCount());
+            }
+        }
+        return response;
+
+    }
+
+
+    // 매일 자정에 클릭 횟수 초기화
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void resetClickCounts() {
+        List<User> users = userRepository.findAllByUserRole("Normal");
+        for (User user : users) {
+            user.setClickCount(0);
+            user.setIsBlocked(false);
+            userRepository.save(user);
         }
     }
 }
