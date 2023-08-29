@@ -45,4 +45,6 @@ public interface UserService {
     User updateUser(UserUpdateRequest request);
 
     public List<User> findAllByEmail(String email);
+
+    public User updateUserRoleAndVipTime(String nickName, String itemName);
 }

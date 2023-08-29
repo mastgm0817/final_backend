@@ -3,6 +3,7 @@ package final_backend.Member.service;
 import final_backend.Coupon.repository.CouponRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.model.UserCredentialResponse;
+import final_backend.Member.model.UserRole;
 import final_backend.Member.model.UserUpdateRequest;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -210,5 +212,39 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+
+    public User updateUserRoleAndVipTime(String nickName, String itemName) {
+        User user = userRepository.findByNickName(nickName);
+        if ( user != null) {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime newVipEndTime = now;
+
+            // 기존 VIP 만료 시간이 있다면 그것을 사용
+            if (user.getVipEndTime() != null && user.getVipEndTime().isAfter(now)) {
+                newVipEndTime = user.getVipEndTime();
+            }
+
+            switch (itemName) {
+                case "한달 이용권":
+                    newVipEndTime = newVipEndTime.plusMonths(1);
+                    break;
+                case "일주일 이용권":
+                    newVipEndTime = newVipEndTime.plusWeeks(1);
+                    break;
+                case "일년 이용권":
+                    newVipEndTime = newVipEndTime.plusYears(1);
+                    break;
+                default:
+                    throw new IllegalArgumentException("알 수 없는 이용권입니다.");
+            }
+
+            user.setVipStartTime(now);
+            user.setVipEndTime(newVipEndTime);
+            user.setUserRole(UserRole.VIP);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+    }
 
 }
