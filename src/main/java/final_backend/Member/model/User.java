@@ -51,13 +51,8 @@ public class User {
 
     @JsonManagedReference
     @Builder.Default
-    @OneToMany
-    private List<InquiryDTO> inquiryList = new ArrayList<>();
-
-//    @JsonManagedReference
-//    @Builder.Default
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<InquiryDTO> inquiries = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+     List<InquiryDTO> inquiryList = new ArrayList<>();
 
     public UserCredentialResponse toUser() {
         return UserCredentialResponse.builder()

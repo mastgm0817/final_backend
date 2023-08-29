@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
             userDTO.setBlackListDetails(user.getBlackListDetails());
             userDTO.setLover(user.getLover());
             userDTO.setInquiryList(user.getInquiryList());
+            userDTO.setUserName(user.getUserName());
             return userDTO;
         } else {
             return null; // 또는 예외 처리를 하거나 다른 처리 방법을 선택

@@ -16,10 +16,10 @@ public class InquiryController {
     private final InquiryService inquiryService;
     private final UserService userService;
     public InquiryController(InquiryService inquiryService, UserService userService) {
-        this.inquiryService = inquiryService;
-        this.userService = userService;
+        this.inquiryService = inquiryService;this.userService = userService;
     }
-e
+
+
     @PostMapping("/{nickName}")
     public ResponseEntity<?> createInquiry(@PathVariable("nickName") String nickName, @RequestBody InquiryRequest inquiryDTO) {
         User user = userService.findByNickName(nickName);

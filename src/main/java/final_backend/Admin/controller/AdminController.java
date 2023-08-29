@@ -6,11 +6,18 @@ import final_backend.Admin.Ga;
 import final_backend.Admin.model.BlackListRequest;
 import final_backend.Admin.model.UserBlackListDTO;
 import final_backend.Admin.service.AdminServiceImpl;
+import final_backend.Inquiry.model.InquiryDTO;
+import final_backend.Inquiry.model.ResponseDTO;
+import final_backend.Inquiry.service.InquiryService;
+import final_backend.Inquiry.service.ResponseService;
 import final_backend.Member.model.User;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Member.service.UserService;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,6 +36,10 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private AdminServiceImpl adminServiceImpl;
+    @Autowired
+    private InquiryService inquiryService;
+    @Autowired
+    private ResponseService responseService;
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> users = userService.getAllUsers();
@@ -69,5 +80,17 @@ public class AdminController {
             resultRows.add(rowMap);
         }
         return ResponseEntity.ok(resultRows);
+    }
+
+    @GetMapping("getAllInquiry")
+    public ResponseEntity<?> getAllInquiry() {
+        return ResponseEntity.ok(inquiryService.findAll());
+    }
+    @PostMapping("/inquiry/{inquiryId}/response")
+    public ResponseEntity<ResponseDTO> createResponse(@PathVariable Long inquiryId, @RequestBody String comment) {
+        // InquiryID를 사용하여 해당 문의를 가져온 후, ResponseDTO와 연결하여 저장
+        ResponseDTO savedResponse = responseService.saveResponse(inquiryId,comment);
+
+        return ResponseEntity.ok(savedResponse);
     }
 }

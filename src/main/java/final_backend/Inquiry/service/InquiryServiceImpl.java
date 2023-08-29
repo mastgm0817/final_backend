@@ -2,6 +2,7 @@ package final_backend.Inquiry.service;
 
 import final_backend.Inquiry.model.InquiryDTO;
 import final_backend.Inquiry.model.InquiryRequest;
+
 import final_backend.Inquiry.repository.InquiryRepository;
 import final_backend.Member.model.User;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,26 @@ public class InquiryServiceImpl implements InquiryService{
         inquiry.setCreatedAt(LocalDate.now());
         inquiry.setContent(inquiryDTO.getContent());
         inquiry.setUser(user);
-        inquiry.setCompleted(false);
         inquiry.setCompletedAt(null);
-        user.getInquiryList().add(inquiry);
+        inquiry.setUserName(user.getUserName());
+        inquiry.setUserId(user.getUid());
+
         inquiryRepository.save(inquiry);
+        user.getInquiryList().add(inquiry);
         return inquiry;
     }
     @Override
     public List<InquiryDTO> findByUser(User user) {
         return inquiryRepository.findByUser(user);
+    }
+
+    @Override
+    public InquiryDTO getInquiryById(Long inquiryId) {
+        return inquiryRepository.findById(inquiryId).orElse(null);
+    }
+
+    @Override
+    public List<InquiryDTO> findAll() {
+        return inquiryRepository.findAll();
     }
 }
