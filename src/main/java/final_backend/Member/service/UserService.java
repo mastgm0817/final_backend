@@ -44,4 +44,5 @@ public interface UserService {
 
     User updateUser(UserUpdateRequest request);
 
+    public List<User> findAllByEmail(String email);
 }
