@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class RandomDTO {
     private String selected_region;
-    private int budget;
+
 }
