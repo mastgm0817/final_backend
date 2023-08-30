@@ -15,26 +15,26 @@ jobs:
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
       WEB_URL : ${{ secrets.WEB_URL }}
-      GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
+      GOOGLE_APPLICATION_CREDENTIALS: ./luvoostgatest-05d711662132.json
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Setup Google Cloud credentials
-      run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > service-account.json
+      run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > luvoostgatest-05d711662132.json
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
+        GOOGLE_APPLICATION_CREDENTIALS: ./luvoostgatest-05d711662132.json
 
     - name: Upload service-account.json as artifact
       uses: actions/upload-artifact@v2
       with:
         name: service-account-file
-        path: ./service-account.json
+        path: ./luvoostgatest-05d711662132.json
 
     - name: Debugging service-account.json
       run: |
         ls -al # 현재 디렉토리 파일 목록을 보여줌
-        cat ./service-account.json # service-account.json의 내용을 출력
+        cat ./luvoostgatest-05d711662132.json # service-account.json의 내용을 출력
         pwd # 현재 파일경로
 
 
