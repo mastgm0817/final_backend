@@ -15,10 +15,11 @@ jobs:
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
       WEB_URL : ${{ secrets.WEB_URL }}
+      GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
 
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: Setup Google Cloud credentials
       run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > service-account.json
@@ -104,7 +105,7 @@ jobs:
        uses: 8398a7/action-slack@v3
        with:
          status: ${{ job.status }}
-         author_name: Frontend - production
+         author_name: Backend - production
          fields: repo,commit,message,author # action,eventName,ref,workflow,job,took 추가할 수 있음
          mention: here
          if_mention: failure,cancelled
