@@ -3,6 +3,8 @@ package final_backend.Member.model;
 import final_backend.Admin.model.UserBlackListDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import final_backend.Coupon.model.Coupon;
+//import final_backend.Inquiry.model.InquiryDTO;
+import final_backend.Inquiry.model.InquiryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -10,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,13 @@ public class User {
     private String password;
     private String profileImage;
     private String providerName;
+    private LocalDateTime vipStartTime;
+    private LocalDateTime vipEndTime;
+    private LocalDateTime lastClickTime;
+    @Builder.Default
+    private Integer clickCount = 0;
+    @Builder.Default
+    private Boolean isBlocked = false;
 
     @Enumerated(EnumType.STRING)
     @Default
@@ -47,6 +57,10 @@ public class User {
     @OneToOne(mappedBy = "blockUser", cascade = CascadeType.ALL)
     private UserBlackListDTO blackListDetails;
 
+    @JsonManagedReference
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+     List<InquiryDTO> inquiryList = new ArrayList<>();
 
     public UserCredentialResponse toUser() {
         return UserCredentialResponse.builder()
@@ -61,6 +75,12 @@ public class User {
         this.profileImage = profileImageUrl;
     }
 
+
+    @PrePersist
+    public void prePersist() {
+        this.clickCount = this.clickCount == null ? 0 : this.clickCount;
+        this.isBlocked = this.isBlocked == null ? false : this.isBlocked;
+    }
     // User 클래스의 toString 메서드에서 couponList와 blackListDetails를 출력하지 않도록 수정
     @Override
     public String toString() {
@@ -74,7 +94,15 @@ public class User {
                 ", providerName='" + providerName + '\'' +
                 ", userRole=" + userRole +
                 ", lover='" + lover + '\'' +
+                ", vipStartTime=" + vipStartTime +
+                ", vipEndTime=" + vipEndTime +
+                ", lastClickTime=" + lastClickTime +
+                ", clickCount=" + clickCount +
+                ", isBlocked=" + isBlocked +
                 '}';
     }
+
+
+
 
 }

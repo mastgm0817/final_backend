@@ -5,6 +5,7 @@ import final_backend.Calendar.repository.CalendarRepository;
 import final_backend.Member.model.User;
 import final_backend.Member.service.UserServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    @Transactional
     public CalendarDTO CreateMySchedule(String userName, LocalDate date, String schedule, boolean share, String loverName) {
         CalendarDTO mySchedule = new CalendarDTO();
         mySchedule.setWriterId(userName);

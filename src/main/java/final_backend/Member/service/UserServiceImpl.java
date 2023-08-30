@@ -2,17 +2,26 @@ package final_backend.Member.service;
 
 import final_backend.Coupon.model.Coupon;
 import final_backend.Coupon.repository.CouponRepository;
-import final_backend.Member.model.User;
-import final_backend.Member.model.UserCredentialResponse;
+import final_backend.Member.exception.BlockedUserException;
+import final_backend.Member.exception.UserNotFoundException;
+import final_backend.Member.model.*;
 import final_backend.Member.repository.UserRepository;
 import final_backend.Utils.JwtUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,6 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User findByNickName(String name) {
         User user = userRepository.findByNickName(name);
 
@@ -56,11 +66,52 @@ public class UserServiceImpl implements UserService {
             userDTO.setCouponList(user.getCouponList());
             userDTO.setBlackListDetails(user.getBlackListDetails());
             userDTO.setLover(user.getLover());
+            userDTO.setInquiryList(user.getInquiryList());
+            userDTO.setUserName(user.getUserName());
 
             return userDTO;
         } else {
             return null; // 또는 예외 처리를 하거나 다른 처리 방법을 선택
         }
+    }
+
+    public Map<String, Boolean> checkNickNameExists(String nickName) {
+        Map<String, Boolean> response = new HashMap<>();
+
+        if (StringUtils.isEmpty(nickName)) {
+            response.put("error", null);
+            return response;
+        }
+
+        boolean exists = userRepository.existsByNickName(nickName);
+        response.put("exists", exists);
+        return response;
+    }
+
+    @Override
+    public User updateUser(UserUpdateRequest request) {
+        // 중복 닉네임 체크
+        if(userRepository.existsByNickName(request.getNickName())) {
+            throw new IllegalArgumentException("NickName already exists");
+        }
+
+        // 이메일로 유저 찾기
+        User user = userRepository.findByNickName(request.getUserName());
+
+        if(user == null){
+            throw new IllegalArgumentException("그런 유저는 없습니다.");
+        }
+
+        // 유저 정보 업데이트
+        user.setUserName(request.getUserName());
+        user.setNickName(request.getNickName());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> findAllByEmail(String email) {
+        return userRepository.findAllByEmail(email);
     }
 
 
@@ -151,17 +202,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByNickName(nickName);
     }
 
-    @Override
-    public User updateNickName(String nickName, String newNickname) {
-        User user = userRepository.findByNickName(nickName);
+    public boolean updateNickName(String oldNickname, String newNickname) {
+        User user = userRepository.findByNickName(oldNickname);
 
-        // 중복된 닉네임인 경우 에외처리
-        if ( userRepository.existsByNickName(newNickname)) {
-            throw new IllegalArgumentException("Nickname already taken: " + newNickname);
+        if (user != null) {
+            user.setNickName(newNickname);
+            userRepository.save(user); // DB에 저장
+            return true;
+        } else {
+            return false;
         }
-
-        user.setNickName(newNickname);
-        return userRepository.save(user);
     }
 
     @Override
@@ -170,4 +220,87 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    public User updateUserRoleAndVipTime(String nickName, String itemName) {
+        User user = userRepository.findByNickName(nickName);
+        if ( user != null) {
+
+            if (user.getIsBlocked() == true) {
+                user.setIsBlocked(false);
+            }
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime newVipEndTime = now;
+
+            // 기존 VIP 만료 시간이 있다면 그것을 사용
+            if (user.getVipEndTime() != null && user.getVipEndTime().isAfter(now)) {
+                newVipEndTime = user.getVipEndTime();
+            }
+
+            switch (itemName) {
+                case "한달 이용권":
+                    newVipEndTime = newVipEndTime.plusMonths(1);
+                    break;
+                case "일주일 이용권":
+                    newVipEndTime = newVipEndTime.plusWeeks(1);
+                    break;
+                case "일년 이용권":
+                    newVipEndTime = newVipEndTime.plusYears(1);
+                    break;
+                default:
+                    throw new IllegalArgumentException("알 수 없는 이용권입니다.");
+            }
+
+            user.setVipStartTime(now);
+            user.setVipEndTime(newVipEndTime);
+            user.setUserRole(UserRole.VIP);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+    }
+
+    public UserClickResponse handleClick(UserClickRequest request) throws Exception {
+        User user = userRepository.findByNickName(request.getNickName());
+        UserClickResponse response = new UserClickResponse();
+
+        if (user == null) {
+            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
+        }
+
+        // VIP, ADMIN 등급 확인
+        if ("VIP".equals(user.getUserRole().name()) || "ADMIN".equals(user.getUserRole().name()))
+        {
+            response.setMessage("무제한 이용권");
+            return response;
+        }
+        // Normal일 경우
+        else {
+            // 마지막 클릭 시간과 클릭 카운트 업데이트
+            user.setLastClickTime(LocalDateTime.now());
+            user.setClickCount(user.getClickCount() + 1);
+            userRepository.save(user);
+            if (user.getClickCount() >= 3) {
+                user.setIsBlocked(true);
+                userRepository.save(user);
+                response.setMessage("하루 이용 횟수를 다 소진하셨습니다.");
+                response.setRemainingClicks(0);  // 남은 클릭 횟수를 0으로 설정
+            } else {
+                response.setRemainingClicks(3 - user.getClickCount());
+            }
+        }
+        return response;
+
+    }
+
+
+    // 매일 자정에 클릭 횟수 초기화
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void resetClickCounts() {
+        List<User> users = userRepository.findAllByUserRole("Normal");
+        for (User user : users) {
+            user.setClickCount(0);
+            user.setIsBlocked(false);
+            userRepository.save(user);
+        }
+    }
 }

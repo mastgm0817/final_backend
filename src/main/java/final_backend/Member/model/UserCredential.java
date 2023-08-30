@@ -6,12 +6,14 @@ import lombok.Data;
 public class UserCredential {
     private String nickName;
     private String email;
+    private String userName;
     private String providerName;
     private String password;
 
     public User toUser(String providerName) {
         return User.builder()
                 .nickName(nickName)
+                .userName(userName)
                 .providerName((providerName))
                 .profileImage("/image/basicprofile.png")
                 .email(email)

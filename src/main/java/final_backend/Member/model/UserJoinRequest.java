@@ -7,7 +7,7 @@ public class UserJoinRequest {
     private String providerName;
     private String nickName;
     private String email;
-        private String profileImage;
+    private String profileImage;
 
     public User toUser(String providerName) {
         return User.builder()
