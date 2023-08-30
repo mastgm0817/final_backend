@@ -1,9 +1,7 @@
 package final_backend.Payment.service;
 
-import final_backend.Payment.model.KakaoApproveResponse;
-import final_backend.Payment.model.KakaoCancelResponse;
-import final_backend.Payment.model.KakaoReadyResponse;
-import final_backend.Payment.model.PayInfo;
+import final_backend.Payment.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,15 +16,32 @@ import java.util.Map;
 @Service
 public class KakaoPayService {
 
-//    @Value("${kakao.admin.key}")
-    private String kakaoAdminKey = "a25ce36106405bcb194b783daf42728b";
+    @Autowired
+    private SharedDTOService sharedDTOService;
+
+    @Value("${kakao.admin.key}")
+    private String kakaoAdminKey;
     static final String cid = "TC0ONETIME";
     private KakaoReadyResponse kakaoReady;
 
-    public KakaoReadyResponse kakaoPayReady(Map<String, Object> payInfo) {
+    public KakaoReadyResponse kakaoPayReady(Map<String, Object> OrderInfo) {
+
+
+
+        Map<String, Object> params = (Map<String, Object>) OrderInfo.get("params");
+        Map<String, Object> couponInfo = (Map<String, Object>) OrderInfo.get("couponInfo");
+
+        KakaoPaymentDTO dto = new KakaoPaymentDTO();
+        dto.setKpaynickName((String) OrderInfo.get("nickName"));
+        dto.setKpayitemName((String) params.get("item_name"));
+        dto.setKpaycouponCode((String) couponInfo.get("couponCode"));
+
+        sharedDTOService.setKakaoPaymentDTO(dto);
+
+        System.out.println("레디 서비스" + dto);
 
         // payInfo 안에 있는 params를 가져옴
-        Map<String, Object> paramsFromPayInfo = (Map<String, Object>) payInfo.get("params");
+        Map<String, Object> paramsFromPayInfo = (Map<String, Object>) OrderInfo.get("params");
 
         // LinkedMultiValueMap을 사용하여 데이터 저장
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();

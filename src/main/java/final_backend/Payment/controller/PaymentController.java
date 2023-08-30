@@ -6,12 +6,16 @@ import final_backend.Member.exception.ExceptionCode;
 import final_backend.Member.service.UserService;
 import final_backend.Payment.model.KakaoApproveResponse;
 import final_backend.Payment.model.KakaoCancelResponse;
+import final_backend.Payment.model.KakaoPaymentDTO;
 import final_backend.Payment.model.KakaoReadyResponse;
 import final_backend.Payment.service.KakaoPayService;
+import final_backend.Payment.service.SharedDTOService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
 
@@ -32,17 +36,52 @@ public class PaymentController {
     @Autowired
     private KakaoPayService kakaoPayService;
 
+    @Autowired
+    private SharedDTOService sharedDTOService;
+
+    @Value("${weburl.secret}")
+    private String weburl;
+
+
     @PostMapping("/ready")
-    public KakaoReadyResponse readyToKakaoPay(@RequestBody Map<String, Object> payInfo) {
-        return kakaoPayService.kakaoPayReady(payInfo);
+    public KakaoReadyResponse readyToKakaoPay(@RequestBody Map<String, Object> OrderInfo) {
+
+        System.out.println("Full Config: " + OrderInfo.toString());
+
+        Map<String, Object> params = (Map<String, Object>) OrderInfo.get("params");
+        Map<String, Object> couponInfo = (Map<String, Object>) OrderInfo.get("couponInfo");
+
+        String kpaynickName = (String) OrderInfo.get("nickName");
+        String kpayitemName = (String) params.get("item_name");
+        String kpaycouponCode = (String) couponInfo.get("couponCode");
+
+        return kakaoPayService.kakaoPayReady(OrderInfo);
     }
 
     @GetMapping("/success")
-    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pgToken) {
+    public RedirectView afterPayRequest(@RequestParam("pg_token") String pgToken) {
+
+        KakaoPaymentDTO dto = sharedDTOService.getKakaoPaymentDTO();
+
+        String kpaynickName = dto.getKpaynickName();
+        String kpayitemName = dto.getKpayitemName();
+        String kpaycouponCode = dto.getKpaycouponCode();
 
         KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken);
 
-        return new ResponseEntity<>(kakaoApprove, HttpStatus.OK);
+
+        userService.updateUserRoleAndVipTime(kpaynickName, kpayitemName);
+
+        if (kpaycouponCode != null && !kpaycouponCode.isEmpty()) {
+            couponService.usedCoupon(kpaycouponCode);
+            System.out.println("쿠폰상태변환 성공");
+        }
+        System.out.println("구매성공");
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(weburl);
+        return redirectView;
+
     }
 
     /**
@@ -86,8 +125,8 @@ public class PaymentController {
 
         String nickName = (String) config.get("nickName");
         String itemName = (String) params.get("item_name");
-        int totalAmount = (Integer) params.get("total_amount");
         String couponCode = (String) couponInfo.get("couponCode");
+        int totalAmount = (Integer) params.get("total_amount");
 
         System.out.println("Item Name: " + itemName);
         System.out.println("nickName: " + nickName);
