@@ -18,13 +18,19 @@ jobs:
       GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
 
 
-    steps:
+  steps:
     - uses: actions/checkout@v2
 
     - name: Setup Google Cloud credentials
       run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > service-account.json
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
+
+    - name: Upload service-account.json as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: service-account-file
+        path: ./service-account.json
 
     - name: Debugging service-account.json
       run: |
