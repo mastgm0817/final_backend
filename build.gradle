@@ -26,7 +26,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'  // 쿠폰 랜덤 번호 생성
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.91' // Amazon S3 SDK
 
@@ -62,8 +61,12 @@ processResources {
 				DATABASE_USERNAME : project.findProperty('DATABASE_USERNAME') ?: System.getenv('DATABASE_USERNAME'),
 				DATABASE_PASSWORD : project.findProperty('DATABASE_PASSWORD') ?: System.getenv('DATABASE_PASSWORD'),
 				FLASK_URL         : project.findProperty('FLASK_URL') ?: System.getenv('FLASK_URL'),
+				WEB_URL         : project.findProperty('WEB_URL') ?: System.getenv('WEB_URL'),
 				S3_ACCESS_KEY         : project.findProperty('S3_ACCESS_KEY') ?: System.getenv('S3_ACCESS_KEY'),
-				S3_SECRET_KEY         : project.findProperty('S3_SECRET_KEY') ?: System.getenv('S3_SECRET_KEY')
+				S3_SECRET_KEY         : project.findProperty('S3_SECRET_KEY') ?: System.getenv('S3_SECRET_KEY'),
+				KAKAO_ADMIN_KEY         : project.findProperty('KAKAO_ADMIN_KEY') ?: System.getenv('KAKAO_ADMIN_KEY'),
+				GOOGLE_APPLICATION_CREDENTIALS         : project.findProperty('GOOGLE_APPLICATION_CREDENTIALS') ?: System.getenv('GOOGLE_APPLICATION_CREDENTIALS'),
+
 		])
 	}
 }
