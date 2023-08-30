@@ -209,24 +209,37 @@ public class UserController {
     public UserController(S3Service s3Service) {
         this.s3Service = s3Service;
     }
-    @PostMapping("users/info/updateProfileImage/{nickName}")
+    @PostMapping("/users/info/updateProfileImage/{nickName}")
     public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file,
                                                      @PathVariable("nickName") String nickName) {
         try {
-            // 엽로드 된 파일 url 가져온다.
+            // 파일을 S3에 업로드하고 새 파일 URL 가져오기
             String newFileUrl = s3Service.uploadFileToS3(file);
-            // 기존 파일의 url 가져온다.
-            User user = userService.findByNickName(nickName);
-            String oldFileUrl = user.getProfileImage();
-            // 기존 파일 삭제 ( 프로필 이미지 없을 경우 무시 )
-            if (oldFileUrl != null) {
-                s3Service.deleteFileFromS3(oldFileUrl);
-            }
-            // 사용자 정보 업데이트 ( 새 프로필 이미지 전달해 업데이트 )
-            userService.updateUserInfo(nickName, newFileUrl);
             return ResponseEntity.ok(newFileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/users/info/updateProfileImage/{nickName}")
+    public ResponseEntity<User> updateProfileImage(@PathVariable("nickName") String nickName,
+                                                   @RequestBody User user) {
+        try {
+            User loginedUser = userService.findByNickName(nickName);
+            // 기존 파일 URL 가져오기
+            String oldFileUrl = loginedUser.getProfileImage();
+
+            // 기존 파일 삭제
+            if (oldFileUrl != null && !oldFileUrl.equals(user.getProfileImage())) {
+                s3Service.deleteFileFromS3(oldFileUrl);
+            }
+
+            // 사용자 정보 업데이트 ( 새 프로필 이미지 전달해 업데이트 )
+            User updatedUser = userService.updateUserInfo(nickName, user.getProfileImage());
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
