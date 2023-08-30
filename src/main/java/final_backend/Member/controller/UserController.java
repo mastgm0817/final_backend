@@ -122,12 +122,13 @@ public class UserController {
             if (existingUser.getProviderName().equals(providerName)) { // 문자열 비교는 '==' 대신 'equals()' 메서드를 사용
                 String accessToken = userService.login(dto.getEmail(), dto.getNickName(), "");
                 String nickName = existingUser.getNickName(); // 또는 어떤 방법으로든 닉네임을 가져옵니다.
-                return ResponseEntity.ok().body(new TokenAndNickNameResponse(accessToken, nickName));
+                String userRole = existingUser.getUserRole().name();
+                return ResponseEntity.ok().body(new TokenAndNickNameResponse(accessToken, nickName, userRole));
             }
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new TokenAndNickNameResponse("회원이 아닌 유저입니다.", null));
+                .body(new TokenAndNickNameResponse("회원이 아닌 유저입니다.", null, null));
     }
 
     // 내 정보 받아오기

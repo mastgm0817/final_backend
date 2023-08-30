@@ -33,6 +33,7 @@ public class AuthenticationConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/users/login","/api/v1/users/join/**", "/api/v1/normal/users/**","/api/v2/predict","/api/v1/admin/**","api/v1/payment/**").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST,"/**").authenticated()
                 .and()
                 .sessionManagement()
