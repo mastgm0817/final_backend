@@ -22,11 +22,11 @@ public interface BoardService {
 
     Boolean hasNext(Long bid);
 
-    Board createBoard(Board board);
+    Board createBoard(Board board, String uid);
 
-    void deleteBoard(Long bid);
+    public void deleteBoard(Long bid,String uid) throws Exception;
 
-    Board updateBoard(Long bid, Board updatedBoard);
+    public Board updateBoard(Long bid, Board updatedBoard, String uid) throws Exception;
 
     Board increaseViewCount(Board board);
 
