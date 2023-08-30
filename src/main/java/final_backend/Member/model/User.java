@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import final_backend.Coupon.model.Coupon;
 //import final_backend.Inquiry.model.InquiryDTO;
 import final_backend.Inquiry.model.InquiryDTO;
+import final_backend.Wishlist.model.Course;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -51,7 +52,12 @@ public class User {
     @JsonManagedReference
     @Builder.Default
     @OneToMany(mappedBy = "userDTO", cascade = CascadeType.ALL)
-    List<Coupon> couponList = new ArrayList<>();
+    private List<Coupon> couponList = new ArrayList<>();
+
+    @JsonManagedReference
+    @Builder.Default
+    @OneToMany(mappedBy = "userWish", cascade = CascadeType.ALL)
+    private List<Course> dateCourses = new ArrayList<>();
 
     @JsonManagedReference
     @OneToOne(mappedBy = "blockUser", cascade = CascadeType.ALL)

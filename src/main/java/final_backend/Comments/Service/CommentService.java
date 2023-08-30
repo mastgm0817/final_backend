@@ -31,31 +31,41 @@ public class CommentService {
 //        return commentRepository.findCommentByCid(cid);
 //    }
 //
-    public Comment createComment(Long bid, Comment comment) {
+    public Comment createComment(Long bid, Comment comment,String uid) {
         Board board=boardRepository.findById(bid).
                 orElseThrow(() -> new EntityNotFoundException(bid+" Board not found"));
         comment.setBoardDTO(board);
         System.out.println(comment.getCContent());
         comment.setCCreatedAt(LocalDateTime.now());
-        comment.setUid("lin");
+        comment.setUid(uid);
         return commentRepository.save(comment);
     }
 
-    public Comment updateComment(Long cid, Comment updatedComment) {
+    public Comment updateComment(Long cid, Comment updatedComment, String uid) throws Exception{
         Optional<Comment> commentOptional = commentRepository.findCommentByCid(cid);
-        Comment existingComment;
-        if (commentOptional.isPresent()) {
-            existingComment = commentOptional.get();
-            existingComment.setCContent(updatedComment.getCContent());
-        } else {
-            return updatedComment;
+
+        if (!commentOptional.isPresent()) {
+            throw new Exception("댓글이 존재하지 않습니다.");
         }
+        Comment existingComment = commentOptional.get();
+        if (!uid.equals(existingComment.getUid())){
+            throw new Exception("댓글의 작성자만 수정할 수 있습니다.");
+        }
+        existingComment.setCContent(updatedComment.getCContent());
         return commentRepository.save(existingComment);
 
     }
 
-    public void deleteComment(Long cid) {
-        commentRepository.deleteById(cid);
+    public void deleteComment(Long cid, String uid) throws Exception{
+        Optional<Comment> commentOptional=commentRepository.findCommentByCid(cid);
+        if (!commentOptional.isPresent()) {
+            throw new Exception("댓글을 찾을 수 없습니다.");
+        }
+        Comment comment = commentOptional.get();
+        if (uid.equals(comment.getUid())) {
+            commentRepository.deleteById(cid);
+        }else {
+            throw new Exception("댓글의 작성자만 삭제할 수 있습니다.");}
+        }
     }
 
-}
