@@ -7,9 +7,10 @@ import lombok.Setter;
 public class TokenAndNickNameResponse {
     private String token;
     private String nickName;
-
-    public TokenAndNickNameResponse(String token, String nickName) {
+    private String userRole;
+    public TokenAndNickNameResponse(String token, String nickName, String userRole) {
         this.token = token;
         this.nickName = nickName;
+        this.userRole = userRole;
     }
 }
