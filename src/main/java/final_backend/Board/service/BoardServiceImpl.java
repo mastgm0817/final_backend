@@ -24,7 +24,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     public Long getDefaultCursorId() {
-        return boardRepository.findTopByOrderByBidDesc().getBid()+1;
+        return Optional.ofNullable(boardRepository.findTopByOrderByBidDesc())
+                .map(board -> board.getBid() + 1)
+                .orElse(1L);
     }
 
     @Override
@@ -101,8 +103,9 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public Board createBoard(Board board) {
+    public Board createBoard(Board board, String uid) {
         LocalDateTime currentTime = LocalDateTime.now();
+        board.setUid(uid);
         board.setBCreatedAt(currentTime);
         board.setBUpdatedAt(currentTime);
         board.setBViews(0L);
@@ -111,23 +114,39 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void deleteBoard(Long bid) {
+    public void deleteBoard(Long bid, String uid) throws Exception {
+        Optional<Board> optionalBoard = getBoardById(bid);
+
+        if (!(optionalBoard.isPresent())) {
+            throw new Exception("게시글을 찾을 수 없습니다.");
+        }
+        Board board = optionalBoard.get();
+        String boardUid=board.getUid();
+        System.out.println("DB Board UID: " + boardUid);
+        System.out.println("Given UID: " + uid);
+        if (!(boardUid.equals(uid))) {
+            throw new Exception("게시글의 소유자만 삭제할 수 있습니다.");
+        }
         boardRepository.deleteById(bid);
     }
 
     @Override
-    public Board updateBoard(Long bid, Board updatedBoard) {
+    public Board updateBoard(Long bid, Board updatedBoard, String uid) throws Exception{
         Optional<Board> boardOptional = boardRepository.findById(bid);
-        if (boardOptional.isPresent()) {
-            Board existingBoard = boardOptional.get();
-            existingBoard.setBTitle(updatedBoard.getBTitle());
-            existingBoard.setBContent(updatedBoard.getBContent());
-            existingBoard.setUid(updatedBoard.getUid());
-            existingBoard.setBUpdatedAt(LocalDateTime.now());
-            return boardRepository.save(existingBoard);
-        } else {
+
+        if (!boardOptional.isPresent()) {
             return null;
         }
+
+        Board existingBoard = boardOptional.get();
+        if(!uid.equals(existingBoard.getUid())){
+            throw new Exception("게시글의 소유자만 수정할 수 있습니다.");
+        }
+
+        existingBoard.setBTitle(updatedBoard.getBTitle());
+        existingBoard.setBContent(updatedBoard.getBContent());
+        existingBoard.setBUpdatedAt(LocalDateTime.now());
+        return boardRepository.save(existingBoard);
     }
 
     @Override
