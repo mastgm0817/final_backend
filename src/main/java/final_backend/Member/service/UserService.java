@@ -30,7 +30,7 @@ public interface UserService {
     UserCredentialResponse validateUser(String email, String password);
 //    String login(String nickName, String email, String password);
 
-    void updateUserInfo(String nickName, String profileImageUrl);
+    User updateUserInfo(String nickName, String profileImageUrl) throws Exception;
 
     boolean isNicknameTaken(String newNickname);
 

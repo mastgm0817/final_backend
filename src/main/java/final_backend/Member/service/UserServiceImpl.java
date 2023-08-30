@@ -136,12 +136,14 @@ public class UserServiceImpl implements UserService {
 
     // 프로필 이미지 수정 로직
     @Override
-    public void updateUserInfo(String nickName, String profileImageUrl) {
+    public User updateUserInfo(String nickName, String profileImageUrl) throws Exception {
         User user = userRepository.findByNickName(nickName);
-        if (user != null) {
-            user.setProfileImageUrl(profileImageUrl);
-            userRepository.save(user);
+        if (user == null) {
+            throw new Exception("User not found with nickname: " + nickName);
         }
+
+        user.setProfileImageUrl(profileImageUrl);
+        return userRepository.save(user); // 업데이트된 사용자 정보 반환
     }
 
     @Override
