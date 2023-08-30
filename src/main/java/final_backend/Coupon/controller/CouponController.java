@@ -1,8 +1,8 @@
 package final_backend.Coupon.controller;
 import final_backend.Coupon.model.Coupon;
-import final_backend.Coupon.model.CouponRequest;
 import final_backend.Coupon.service.CouponService;
 import final_backend.Member.exception.CouponAlreadyAssignedException;
+import final_backend.Member.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +16,11 @@ import java.util.*;
 public class CouponController {
 
     private final CouponService couponService;
-
+    private final UserService userService;
     @Autowired
-    public CouponController(CouponService couponService) {
+    public CouponController(CouponService couponService, UserService userService) {
         this.couponService = couponService;
+        this.userService = userService;
     }
 
     @PostMapping // 쿠폰 한개만들때
@@ -83,9 +84,9 @@ public class CouponController {
 
 
     @PostMapping("/assign")
-    public ResponseEntity<?> assignCouponToUser(@RequestParam String couponId, @RequestParam String userId) {
+    public ResponseEntity<?> assignCouponToUser(@RequestParam String couponId, @RequestParam String nickName) {
         Long cpid = Long.parseLong(couponId);
-        Long uid = Long.parseLong(userId);
+        Long uid = userService.findByNickName(nickName).getUid();
         try {
             couponService.assignCouponToUser(cpid, uid);
             return new ResponseEntity<>("Coupon assigned successfully", HttpStatus.OK);
