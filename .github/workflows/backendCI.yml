@@ -17,8 +17,7 @@ jobs:
       WEB_URL : ${{ secrets.WEB_URL }}
       GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
 
-
-  steps:
+    steps:
     - uses: actions/checkout@v2
 
     - name: Setup Google Cloud credentials
